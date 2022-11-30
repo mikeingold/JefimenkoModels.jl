@@ -1,11 +1,11 @@
 module JefimenkoModels
-    using ..CoordinateSystems
     using ForwardDiff
     using HCubature
     using LinearAlgebra
     using StaticArrays
     using Unitful
     using Unitful.DefaultSymbols: A, V, m, s, rad
+    using UnitfulCoordinateSystems
 
     ###########################################################################
     #                        DATA STRUCTURES
