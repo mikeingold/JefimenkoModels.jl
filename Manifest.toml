@@ -2,7 +2,7 @@
 
 julia_version = "1.8.2"
 manifest_format = "2.0"
-project_hash = "e0ab66a24fd0d515b38e18dc05d1996e7360bebe"
+project_hash = "523faa140f51a085595127ff6bf5223405e6a110"
 
 [[deps.ArgTools]]
 uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
@@ -298,6 +298,12 @@ deps = ["ConstructionBase", "Dates", "LinearAlgebra", "Random"]
 git-tree-sha1 = "d670a70dd3cdbe1c1186f2f17c9a68a7ec24838c"
 uuid = "1986cc42-f94f-5a68-af5c-568840ba703d"
 version = "1.12.2"
+
+[[deps.UnitfulCoordinateSystems]]
+deps = ["LinearAlgebra", "StaticArrays", "Unitful"]
+path = "C:\\Users\\mikei\\.julia\\packages_local\\UnitfulCoordinateSystems"
+uuid = "09812cc9-162f-4ef5-b000-81142b1d39ff"
+version = "0.1.0"
 
 [[deps.Zlib_jll]]
 deps = ["Libdl"]
