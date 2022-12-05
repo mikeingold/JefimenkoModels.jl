@@ -1,7 +1,7 @@
 name = "JefimenkoModels"
 uuid = "d277eb4b-a029-4f3f-8547-f56fb2721095"
-authors = ["Mike Ingold <mike.ingold@gmail.com>"]
-version = "0.1.0"
+authors = ["Michael Ingold <mike.ingold@gmail.com>"]
+version = "0.1.1"
 
 [deps]
 ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
