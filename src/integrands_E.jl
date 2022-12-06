@@ -1,4 +1,8 @@
-function 𝐈e(r̄′::Coordinate; r̄::Coordinate, t::Unitful.Time, media::PropagationMedia_Simple, source::SurfaceSource_Disk_General{T}) where {T<:AbstractFloat}
+###########################################################################
+#              SurfaceSource_Disk in PropagationMedia_Simple
+###########################################################################
+
+function 𝐈e(r̄′::Coordinate, source::SurfaceSource_Disk_General{T}; r̄::Coordinate, t::Unitful.Time, media::PropagationMedia_Simple) where {T<:AbstractFloat}
     r̄′_cart = CoordinateCartesian(r̄′)
     Δr̄_m = ustrip.(T, m, SVector(r̄ - r̄′_cart))
     r_m = norm(Δr̄_m)
@@ -6,7 +10,9 @@ function 𝐈e(r̄′::Coordinate; r̄::Coordinate, t::Unitful.Time, media::Prop
     c = ustrip(T, m/s, media.c)
     ε = ustrip(T, A*s/(V*m), media.ε)
 
-    tr_s::T = ustrip(T, s, tᵣ(r̄,t,r̄′,media.c))        # retarded time in s
+    # Calculate source-observer retarded time
+    tr::Unitful.Time = tᵣ(r̄,t,r̄′,media)
+    tr_s::T = ustrip(T, s, tr)        # retarded time in s
 
     # Source functions
     ρₑ(t::Real) = source.ρₑ(r̄′_cart, t)               # in C m^-2
@@ -31,7 +37,7 @@ function 𝐈e(r̄′::Coordinate; r̄::Coordinate, t::Unitful.Time, media::Prop
     return ( (term1 - term2) * ρ_m )  # [V/m^3 * m] -> [V/m^2]
 end
 
-function 𝐈e(r̄′::Coordinate; r̄::Coordinate, t::Unitful.Time, media::PropagationMedia_Simple, source::SurfaceSource_Disk_ElectricOnly{T}) where {T<:AbstractFloat}
+function 𝐈e(r̄′::Coordinate, source::SurfaceSource_Disk_ElectricOnly{T}; r̄::Coordinate, t::Unitful.Time, media::PropagationMedia_Simple) where {T<:AbstractFloat}
     r̄′_cart = CoordinateCartesian(r̄′)
     Δr̄_m = ustrip.(T, m, SVector(r̄ - r̄′_cart))
     r_m = norm(Δr̄_m)
@@ -39,7 +45,9 @@ function 𝐈e(r̄′::Coordinate; r̄::Coordinate, t::Unitful.Time, media::Prop
     c = ustrip(T, m/s, media.c)
     ε = ustrip(T, A*s/(V*m), media.ε)
 
-    tr_s::T = ustrip(T, s, tᵣ(r̄,t,r̄′,media.c))        # retarded time in s
+    # Calculate source-observer retarded time
+    tr::Unitful.Time = tᵣ(r̄,t,r̄′,media)
+    tr_s::T = ustrip(T, s, tr)        # retarded time in s
 
     # Source functions
     ρₑ(t::Real) = source.ρₑ(r̄′_cart, t)               # in C m^-2
@@ -57,7 +65,7 @@ function 𝐈e(r̄′::Coordinate; r̄::Coordinate, t::Unitful.Time, media::Prop
     return ( term1 * ρ_m )  # [V/m^3 * m] -> [V/m^2]
 end
 
-function 𝐈e(r̄′::Coordinate; r̄::Coordinate, t::Unitful.Time, media::PropagationMedia_Simple, source::SurfaceSource_Disk_CurrentsOnly{T}) where {T<:AbstractFloat}
+function 𝐈e(r̄′::Coordinate, source::SurfaceSource_Disk_CurrentsOnly{T}; r̄::Coordinate, t::Unitful.Time, media::PropagationMedia_Simple) where {T<:AbstractFloat}
     r̄′_cart = CoordinateCartesian(r̄′)
     Δr̄_m = ustrip.(T, m, SVector(r̄ - r̄′_cart))
     r_m = norm(Δr̄_m)
@@ -65,7 +73,9 @@ function 𝐈e(r̄′::Coordinate; r̄::Coordinate, t::Unitful.Time, media::Prop
     c = ustrip(T, m/s, media.c)
     ε = ustrip(T, A*s/(V*m), media.ε)
 
-    tr_s::T = ustrip(T, s, tᵣ(r̄,t,r̄′,media.c))        # retarded time in s
+    # Calculate source-observer retarded time
+    tr::Unitful.Time = tᵣ(r̄,t,r̄′,media)
+    tr_s::T = ustrip(T, s, tr)        # retarded time in s
 
     # Source functions
     Jₑ(t::Real) = source.Jₑ(r̄′_cart, t)               # in A m^-1

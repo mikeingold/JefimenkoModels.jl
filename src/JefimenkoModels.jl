@@ -40,7 +40,7 @@ module JefimenkoModels
         function integrand(coord)
             # coord -> [ρ in m, ϕ in rad]
             r̄′ = CoordinatePolar(coord[1]*m, coord[2]*rad)
-            return 𝐈e(r̄′; r̄=r̄, t=t, media=media, source=source)
+            return 𝐈e(r̄′, source; r̄=r̄, t=t, media=media)
         end
 
         # Integrate over circular aperture.   [V/m^2 * m * []] -> [V/m]
