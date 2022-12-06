@@ -7,230 +7,27 @@ module JefimenkoModels
     using Unitful.DefaultSymbols: A, V, C, m, s, rad
     using UnitfulCoordinateSystems
 
-    ###########################################################################
-    #                        DATA STRUCTURES
-    ###########################################################################
-
-    abstract type JefimenkoSource{T} end
-
-        abstract type VolumeSource{T} <: JefimenkoSource{T} end
-
-            struct VolumeSource_Rectangular{T} <: VolumeSource{T}
-                xlims::Tuple{Unitful.Length, Unitful.Length}
-                ylims::Tuple{Unitful.Length, Unitful.Length}
-                zlims::Tuple{Unitful.Length, Unitful.Length}
-                ρₑ::Function
-                ρₕ::Function
-                Jₑ::Function
-                Jₕ::Function
-            end
-
-            struct VolumeSource_Cylinder{T} <: VolumeSource{T}
-                r::Tuple{Unitful.Length, Unitful.Length}
-                ϕlims::Tuple{Unitful.Length, Unitful.Length}
-                zlims::Tuple{Unitful.Length, Unitful.Length}
-                ρₑ::Function
-                ρₕ::Function
-                Jₑ::Function
-                Jₕ::Function
-            end
-
-            struct VolumeSource_Sphere{T} <: VolumeSource{T}
-                r::Tuple{Unitful.Length, Unitful.Length}
-                θlims::Tuple{Unitful.Length, Unitful.Length}
-                ϕlims::Tuple{Unitful.Length, Unitful.Length}
-                ρₑ::Function
-                ρₕ::Function
-                Jₑ::Function
-                Jₕ::Function
-            end
-
-        abstract type SurfaceSource{T} <: JefimenkoSource{T} end
-
-            struct SurfaceSource_Rectangle{T} <: SurfaceSource{T}
-                xlims::Tuple{Unitful.Length, Unitful.Length}
-                ylims::Tuple{Unitful.Length, Unitful.Length}
-                ρₑ::Function
-                ρₕ::Function
-                Jₑ::Function
-                Jₕ::Function
-            end
-
-            abstract type SurfaceSource_Disk{T} <: SurfaceSource{T} end
-
-                struct SurfaceSource_Disk_General{T} <: SurfaceSource_Disk{T}
-                    ρ₀::Unitful.Length
-                    ρₑ::Function
-                    ρₕ::Function
-                    Jₑ::Function
-                    Jₕ::Function
-                end
-
-                struct SurfaceSource_Disk_CurrentsOnly{T} <: SurfaceSource_Disk{T}
-                    ρ₀::Unitful.Length
-                    Jₑ::Function
-                    Jₕ::Function
-                end
-
-                struct SurfaceSource_Disk_ElectricOnly{T} <: SurfaceSource_Disk{T}
-                    ρ₀::Unitful.Length
-                    ρₑ::Function
-                    Jₑ::Function
-                end
-
-        abstract type LineSource{T} <: JefimenkoSource{T} end
-
-            abstract type LineSource_Straight{T} <: LineSource{T} end
-
-                struct LineSource_Straight_General{T} <: LineSource_Straight{T}
-                    ā::CoordinateCartesian
-                    b̄::CoordinateCartesian
-                    ρₑ::Function
-                    ρₕ::Function
-                    Jₑ::Function
-                    Jₕ::Function
-                end
-
-                struct LineSource_Straight_ElectricOnly{T} <: LineSource_Straight{T}
-                    ā::CoordinateCartesian
-                    b̄::CoordinateCartesian
-                    ρₑ::Function
-                    Jₑ::Function
-                end
-
-                struct LineSource_Straight_CurrentsOnly{T} <: LineSource_Straight{T}
-                    ā::CoordinateCartesian
-                    b̄::CoordinateCartesian
-                    Jₑ::Function
-                    Jₕ::Function
-                end
-
-    export VolumeSource_Rectangular, VolumeSource_Cylinder, VolumeSource_Sphere
-    export SurfaceSource_Rectangle
-    export SurfaceSource_Disk_General,  SurfaceSource_Disk_CurrentsOnly,  SurfaceSource_Disk_ElectricOnly
-    export LineSource_Straight_General, LineSource_Straight_CurrentsOnly, LineSource_Straight_ElectricOnly
-
-    abstract type PropagationMedia end
-
-        struct PropagationMedia_Simple <: PropagationMedia
-            ε::Quantity
-            μ::Quantity
-            c::Quantity
-        end
-
-        struct PropagationMedia_DiagonallyAnisotropic <: PropagationMedia
-            ε::Diagonal{Quantity}
-            μ::Diagonal{Quantity}
-            c::Diagonal{Quantity}
-        end
-    
-        export PropagationMedia_Simple, PropagationMedia_DiagonallyAnisotropic
-
-    struct JefimenkoModel{T}
-        media::PropagationMedia
-        sources::Vector{JefimenkoSource{T}}
-        metadata::Dict{Symbol,Any}
-    end
-
-    export PropagationMedia, JefimenkoModel
+    include("structs.jl")
 
     ###########################################################################
-    #                            INTERNAL FUNCTIONS
+    #                      RETARDED TIME CALCULATIONS
     ###########################################################################
 
     tᵣ(r̄::Coordinate, t::Unitful.Time, r̄′::Coordinate, c::Quantity)::Unitful.Time = t - (norm(r̄-r̄′)/c)
 
-    function 𝐈e(r̄′::Coordinate; r̄::Coordinate, t::Unitful.Time, media::PropagationMedia_Simple, source::SurfaceSource_Disk_General{T}) where {T<:AbstractFloat}
-        r̄′_cart = CoordinateCartesian(r̄′)
-        Δr̄_m = ustrip.(T, m, SVector(r̄ - r̄′_cart))
-        r_m = norm(Δr̄_m)
-        ρ_m = ustrip(T, m, UnitfulCoordinateSystems.ρ(r̄′))
-        c = ustrip(T, m/s, media.c)
-        ε = ustrip(T, A*s/(V*m), media.ε)
+    tᵣ(r̄::Coordinate, t::Unitful.Time, r̄′::Coordinate, media::PropagationMedia_Simple)::Unitful.Time = t - (norm(r̄-r̄′)/media.c)
 
-        tr_s::T = ustrip(T, s, tᵣ(r̄,t,r̄′,media.c))        # retarded time in s
-
-        # Source functions
-        ρₑ(t::Real) = source.ρₑ(r̄′_cart, t)               # in C m^-2
-        ∂ρₑ_∂t(t::Real) = ForwardDiff.derivative(ρₑ, t)   # in C m^-2 s^-1
-        Jₑ(t::Real) = source.Jₑ(r̄′_cart, t)               # in A m^-1
-        ∂Jₑ_∂t(t::Real) = ForwardDiff.derivative(Jₑ, t)   # in A m^-1 s^-1
-        Jₕ(t::Real) = source.Jₕ(r̄′_cart, t)                # in V m^-1
-        ∂Jₕ_∂t(t::Real) = ForwardDiff.derivative(Jₕ, t)    # in V m^-1 s^-1
-
-        # Calculate first term
-        term1a = ( (Δr̄_m ./ r_m^3) .* ρₑ(tr_s) )                # [m/m^3 * C/m^2]         -> [A*s/m^4]
-        term1b = ( (Δr̄_m ./ r_m^2) .* (c^-1) .* ∂ρₑ_∂t(tr_s) )  # [m/m^2 * s/m * C/sm^-2] -> [A*s/m^4]
-        term1c = ( (1 / r_m) .* (c^-2) .* ∂Jₑ_∂t(tr_s) )        # [1/m * s^2/m^2 * A/sm]  -> [A*s/m^4]
-        term1  = ( (ε^-1) .* (term1a + term1b - term1c) )       # [Vm/As * As/m^4] -> [V/m^3]
-        
-        # Calculate second term
-        term2a = ( Jₕ(tr_s) ./ r_m^3 )                          # [V/m / m^3] -> [V/m^4]
-        term2b = ( (1 / r_m^2) .* (c^-1) .* ∂Jₕ_∂t(tr_s) )      # [1/m^2 * s/m * V/sm] -> [V/m^4]
-        term2  = cross((term2a + term2b), Δr̄_m)                 # [V/m^4 * m] -> [V/m^3]
-
-        # Combine terms and apply integration factor
-        return ( (term1 - term2) * ρ_m )  # [V/m^3 * m] -> [V/m^2]
-    end
-
-    function 𝐈e(r̄′::Coordinate; r̄::Coordinate, t::Unitful.Time, media::PropagationMedia_Simple, source::SurfaceSource_Disk_ElectricOnly{T}) where {T<:AbstractFloat}
-        r̄′_cart = CoordinateCartesian(r̄′)
-        Δr̄_m = ustrip.(T, m, SVector(r̄ - r̄′_cart))
-        r_m = norm(Δr̄_m)
-        ρ_m = ustrip(T, m, UnitfulCoordinateSystems.ρ(r̄′))
-        c = ustrip(T, m/s, media.c)
-        ε = ustrip(T, A*s/(V*m), media.ε)
-
-        tr_s::T = ustrip(T, s, tᵣ(r̄,t,r̄′,media.c))        # retarded time in s
-
-        # Source functions
-        ρₑ(t::Real) = source.ρₑ(r̄′_cart, t)               # in C m^-2
-        ∂ρₑ_∂t(t::Real) = ForwardDiff.derivative(ρₑ, t)   # in C m^-2 s^-1
-        Jₑ(t::Real) = source.Jₑ(r̄′_cart, t)               # in A m^-1
-        ∂Jₑ_∂t(t::Real) = ForwardDiff.derivative(Jₑ, t)   # in A m^-1 s^-1
-
-        # Calculate first term
-        term1a = ( (Δr̄_m ./ r_m^3) .* ρₑ(tr_s) )                # [m/m^3 * C/m^2]         -> [A*s/m^4]
-        term1b = ( (Δr̄_m ./ r_m^2) .* (c^-1) .* ∂ρₑ_∂t(tr_s) )  # [m/m^2 * s/m * C/sm^-2] -> [A*s/m^4]
-        term1c = ( (1 / r_m) .* (c^-2) .* ∂Jₑ_∂t(tr_s) )        # [1/m * s^2/m^2 * A/sm]  -> [A*s/m^4]
-        term1  = ( (ε^-1) .* (term1a + term1b - term1c) )       # [Vm/As * As/m^4] -> [V/m^3]
-
-        # Apply integration factor
-        return ( term1 * ρ_m )  # [V/m^3 * m] -> [V/m^2]
-    end
-
-    function 𝐈e(r̄′::Coordinate; r̄::Coordinate, t::Unitful.Time, media::PropagationMedia_Simple, source::SurfaceSource_Disk_CurrentsOnly{T}) where {T<:AbstractFloat}
-        r̄′_cart = CoordinateCartesian(r̄′)
-        Δr̄_m = ustrip.(T, m, SVector(r̄ - r̄′_cart))
-        r_m = norm(Δr̄_m)
-        ρ_m = ustrip(T, m, UnitfulCoordinateSystems.ρ(r̄′))
-        c = ustrip(T, m/s, media.c)
-        ε = ustrip(T, A*s/(V*m), media.ε)
-
-        tr_s::T = ustrip(T, s, tᵣ(r̄,t,r̄′,media.c))        # retarded time in s
-
-        # Source functions
-        Jₑ(t::Real) = source.Jₑ(r̄′_cart, t)               # in A m^-1
-        ∂Jₑ_∂t(t::Real) = ForwardDiff.derivative(Jₑ, t)   # in A m^-1 s^-1
-        Jₕ(t::Real) = source.Jₕ(r̄′_cart, t)                # in V m^-1
-        ∂Jₕ_∂t(t::Real) = ForwardDiff.derivative(Jₕ, t)    # in V m^-1 s^-1
-
-        # Calculate first term
-        term1c = ( (1 / r_m) .* (c^-2) .* ∂Jₑ_∂t(tr_s) )    # [1/m * s^2/m^2 * A/sm]  -> [A*s/m^4]
-        term1  = ( (ε^-1) .* (-term1c) )                    # [Vm/As * As/m^4] -> [V/m^3]
-        
-        # Calculate second term
-        term2a = ( Jₕ(tr_s) ./ r_m^3 )                          # [V/m / m^3] -> [V/m^4]
-        term2b = ( (1 / r_m^2) .* (c^-1) .* ∂Jₕ_∂t(tr_s) )      # [1/m^2 * s/m * V/sm] -> [V/m^4]
-        term2  = cross((term2a + term2b), Δr̄_m)                 # [V/m^4 * m] -> [V/m^3]
-
-        # Combine terms and apply integration factor
-        return ( (term1 - term2) * ρ_m )  # [V/m^3 * m] -> [V/m^2]
+    function tᵣ(r̄::Coordinate, t::Unitful.Time, r̄′::Coordinate, media::PropagationMedia_DiagonallyAnisotropic)::Unitful.Time
+        Δr̄ = SVector(r̄ - r̄′)
+        Δt = norm(media.c^-1 * Δr̄) |> unit(t)
+        return (t - Δt)
     end
 
     ###########################################################################
     #                       𝐄-FIELD FUNCTIONS
     ###########################################################################
+
+    include("integrands_E.jl")
 
     function 𝐄(r̄::Coordinate, t::Unitful.Time, model::JefimenkoModel; rtol=sqrt(eps()))
         # Sum the contributions of the 𝐄(r̄,t) produced by each source in model
@@ -258,12 +55,15 @@ module JefimenkoModels
     #                       𝐇-FIELD FUNCTIONS
     ###########################################################################
 
-    function 𝐇(model::JefimenkoModel, r̄::Coordinate, t::Unitful.Time; rtol=sqrt(eps()))
+    # include("integrands_H.jl")
+
+    function 𝐇(r̄::Coordinate, t::Unitful.Time, model::JefimenkoModel; rtol=sqrt(eps()))
         # Sum the contributions of the 𝐇(r̄,t) produced by each source in model
-        return mapreduce(source -> 𝐇(source, model.media, r̄, t; rtol=rtol), +, model.sources) 
+        H_contrib(source) = 𝐇(r̄, t, source; media=model.media, rtol=rtol)
+        return mapreduce(H_contrib, +, model.sources) 
     end
 
-    function 𝐇(source::SurfaceSource_Disk, media::PropagationMedia, r̄::Coordinate, t::Unitful.Time; rtol=sqrt(eps()))
+    function 𝐇(r̄::Coordinate, t::Unitful.Time, source::SurfaceSource_Disk{T}; media::PropagationMedia, rtol=sqrt(eps())) where {T<:AbstractFloat}
         error("Not implemented yet.")
     end
 
