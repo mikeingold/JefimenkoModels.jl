@@ -8,10 +8,11 @@ module JefimenkoModels
 
     __DEFAULT_RTOL = sqrt(eps())
 
+    # Data structures
     include("structs.jl")
 
     ###########################################################################
-    #                     RETARDED TIME CALCULATIONS
+    #                     RETARDED-TIME CALCULATIONS
     ###########################################################################
 
     tᵣ(r̄::Coordinate, t::Unitful.Time, r̄′::Coordinate, c::Quantity)::Unitful.Time = t - (norm(r̄-r̄′)/c)

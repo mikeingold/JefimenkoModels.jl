@@ -1,9 +1,8 @@
 # TODO
 
 ## High Priority
-- Implement H-field integrand functions
-- Implement H-field calculations for LineSource and SurfaceSource types
 - Compare results of E-field calculations with prior animation script
+- Update abstract type names to `Abstract_*`
 - Validate results of calculations against FEKO
 
 ## Medium Term
