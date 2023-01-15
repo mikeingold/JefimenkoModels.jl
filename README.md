@@ -10,7 +10,17 @@ This package remains in development status. Not all planned solver methods are y
 
 | Public Function | Implemented | Tested | Validated |
 |:---|:---:|:---:|:---:|
-| `E(LineSource_General)` | :white_check_mark: | :x: | :x: |
-| `H(LineSource_General)` | :white_check_mark: | :x: | :x: |
-| `E(SurfaceSource_DiskGeneral)` | :white_check_mark: | :x: | :x: |
-| `H(SurfaceSource_DiskGeneral)` | :white_check_mark: | :x: | :x: |
+| `E(LineSource_Straight_General)` | :white_check_mark: | :x: | :x: |
+| `H(LineSource_Straight_General)` | :white_check_mark: | :x: | :x: |
+| `E(SurfaceSource_Disk_General)` | :white_check_mark: | :x: | :x: |
+| `H(SurfaceSource_Disk_General)` | :white_check_mark: | :x: | :x: |
+
+## Usage (TODO)
+
+- How to construct a model
+    - `LineSource_Straight`
+    - `SurfaceSource_Disk`
+- How to calculate the fields
+    - `E(r,t,model)`
+    - `H(r,t,model)`
+    - `P(r,t,model)`

@@ -1,28 +1,5 @@
 # TODO
 
-## Organize API Structure:
-
-Public:
-- E(r,t,model)
-- H(r,t,model)
-- P(r,t,model)
-
-Internal:
-- Electric Fields
-    - _E(r,t,source::T,media) where T isa LineSource_Straight_General    (implemented)
-    - _E(r,t,source::T,media) where T isa SurfaceSource_Disk_General     (implemented)
-- Electric Integrands
-    - _integrand_E_R1(r)::Vector{Quantity}   (implemented)
-    - _integrand_E_R2(r)::Vector{T}          (implemented)
-    - _integrand_E_R3(r)::Vector{T}          (implemented)
-- Magnetic Fields
-    - _H(r,t,source::T,media) where T isa LineSource_Straight_General    (implemented)
-    - _H(r,t,source::T,media) where T isa SurfaceSource_Disk_General     (implemented)
-- Magnetic Integrands
-    - _integrand_H_R1(r)::Vector{Quantity}     (implemented)
-    - _integrand_H_R2(r)::Vector{T}            (implemented)
-    - _integrand_H_R3(r)::Vector{T}            (implemented)
-
 ## High Priority
 - Implement H-field integrand functions
 - Implement H-field calculations for LineSource and SurfaceSource types
@@ -32,6 +9,7 @@ Internal:
 ## Medium Term
 - Determine if performance benefits justify specialized integral functions for non-general sources
     - Consider either adding functions to generalize them, or just removing them totally
+- Fully populate the README Status with all struct types and implementation status
 
 ## Longer-Term Vision
 - Add a CITATION.bib
