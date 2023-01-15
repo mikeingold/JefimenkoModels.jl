@@ -1,6 +1,5 @@
 module JefimenkoModels
-    using ForwardDiff
-    using HCubature
+    using ForwardDiff, HCubature, Integrals
     using LinearAlgebra
     using StaticArrays
     using Unitful
@@ -12,7 +11,7 @@ module JefimenkoModels
     include("structs.jl")
 
     ###########################################################################
-    #                      RETARDED TIME CALCULATIONS
+    #                     RETARDED TIME CALCULATIONS
     ###########################################################################
 
     tᵣ(r̄::Coordinate, t::Unitful.Time, r̄′::Coordinate, c::Quantity)::Unitful.Time = t - (norm(r̄-r̄′)/c)
@@ -26,76 +25,100 @@ module JefimenkoModels
     end
 
     ###########################################################################
-    #                       𝐄-FIELD FUNCTIONS
+    #                     EM FIELD CALCULATIONS
     ###########################################################################
 
-    include("integrands_E.jl")
+    """
+        𝐄(r̄::Coordinate, t::Time, model::JefimenkoModel; rtol=sqrt(eps))
 
+    Calculate the predicted electric field 𝐇 observed at space-time point (`r̄`,`t`) using
+    the electric Jefimenko equation for a particular `model`. Calculate the integral using
+    a specified `relative tolerance`.
+
+    # Arguments
+    - `r̄::UnitfulCoordinateSystems.Coordinate`: spatial location of the observation point
+    - `t::Unitful.Time`: time at which the electric field is observed
+    - `model::JefimenkoModel`: model of the transmitting source and propagation media
+
+    # Keywords
+    - `rtol::Real`: relative tolerance at which to solve the integral (optional)
+    """
     function 𝐄(r̄::Coordinate, t::Unitful.Time, model::JefimenkoModel; rtol=__DEFAULT_RTOL)
-        # Sum the contributions of the 𝐄(r̄,t) produced by each source in model
-        E_contrib(source) = 𝐄(r̄, t, source; media=model.media, rtol=rtol)
-        return mapreduce(E_contrib, +, model.sources) 
+        # Superimpose the contributions of the 𝐄(r̄,t) produced by each source in model
+        E_contrib(source) = _𝐄(r̄, t, source, model.media; rtol=rtol)
+        return mapreduce(E_contrib, +, model.sources)
     end
 
-    function 𝐄(r̄::Coordinate, t::Unitful.Time, source::SurfaceSource_Disk{T}; media::PropagationMedia, rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
-        # Define an shim function since HCubature doesn't currently support Unitful integration
-        function integrand(coord)
-            # coord -> [ρ in m, ϕ in rad]
-            r̄′ = CoordinatePolar(coord[1]*m, coord[2]*rad)
-            return 𝐈e(r̄′, source; r̄=r̄, t=t, media=media)
-        end
+    """
+        𝐇(r̄::Coordinate, t::Time, model::JefimenkoModel; rtol=sqrt(eps))
 
-        # Integrate over circular aperture.   [V/m^2 * m * []] -> [V/m]
-        ρ₀_m = ustrip(T, m, source.ρ₀)
-        iint = hcubature(integrand, [zero(T), zero(T)], [ρ₀_m, T(2π)], rtol=rtol)
-        return ( (1/4π) .* iint[1] .* (V/m) )
-    end
+    Calculate the predicted magnetic field 𝐇 observed at space-time point (`r̄`,`t`) using
+    the magnetic Jefimenko equation for a particular `model`. Calculate the integral using
+    a specified `relative tolerance`.
 
-    export 𝐄
+    # Arguments
+    - `r̄::UnitfulCoordinateSystems.Coordinate`: spatial location of the observation point
+    - `t::Unitful.Time`: time at which the field is observed
+    - `model::JefimenkoModel`: model of the transmitting source and propagation media
 
-    ###########################################################################
-    #                       𝐇-FIELD FUNCTIONS
-    ###########################################################################
-
-    include("integrands_H.jl")
-
+    # Keywords
+    - `rtol::Real`: relative tolerance at which to solve the integral (optional)
+    """
     function 𝐇(r̄::Coordinate, t::Unitful.Time, model::JefimenkoModel; rtol=__DEFAULT_RTOL)
-        # Sum the contributions of the 𝐇(r̄,t) produced by each source in model
-        H_contrib(source) = 𝐇(r̄, t, source; media=model.media, rtol=rtol)
+        # Superimpose the contributions of the 𝐇(r̄,t) produced by each source in model
+        H_contrib(source) = _𝐇(r̄, t, source, model.media; rtol=rtol)
         return mapreduce(H_contrib, +, model.sources) 
     end
 
-    function 𝐇(r̄::Coordinate, t::Unitful.Time, source::SurfaceSource_Disk{T}; media::PropagationMedia, rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
-        # Define an shim function since HCubature doesn't currently support Unitful integration
-        function integrand(coord)
-            # coord -> [ρ in m, ϕ in rad]
-            r̄′ = CoordinatePolar(coord[1]*m, coord[2]*rad)
-            return 𝐈h(r̄′, source; r̄=r̄, t=t, media=media)
-        end
+    """
+        𝐏(r̄::Coordinate, t::Time, model::JefimenkoModel; rtol=sqrt(eps))
 
-        # Integrate over circular aperture.   [A/m^2 * m * []] -> [A/m]
-        ρ₀_m = ustrip(T, m, source.ρ₀)
-        iint = hcubature(integrand, [zero(T), zero(T)], [ρ₀_m, T(2π)], rtol=rtol)
-        return ( (1/4π) .* iint[1] .* (A/m) )
-    end
+    Calculate the predicted Poynting vector 𝐏 observed at space-time point (`r̄`,`t`) using
+    the electric and magnetic Jefimenko equations for a particular `model`. Calculate the
+    integrals using a specified `relative tolerance`.
 
-    export 𝐇
+    # Arguments
+    - `r̄::UnitfulCoordinateSystems.Coordinate`: spatial location of the observation point
+    - `t::Unitful.Time`: time at which the field is observed
+    - `model::JefimenkoModel`: model of the transmitting source and propagation media
 
-    ###########################################################################
-    #                       POYNTING VECTOR FUNCTIONS
-    ###########################################################################
-
+    # Keywords
+    - `rtol::Real`: relative tolerance at which to solve the integral (optional)
+    """
     function 𝐏(r̄::Coordinate, t::Unitful.Time, model::JefimenkoModel; rtol=__DEFAULT_RTOL)
         E = 𝐄(r̄,t,model; rtol=rtol)
         H = 𝐇(r̄,t,model; rtol=rtol)
         return cross(E,H) .|> W/m^2
     end
 
-    function 𝐏(r̄::Coordinate, t::Unitful.Time, source::SurfaceSource_Disk{T}; media::PropagationMedia, rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
-        E = 𝐄(r̄,t,source; media=media, rtol=rtol)
-        H = 𝐇(r̄,t,source; media=media, rtol=rtol)
+    """
+        _𝐏(r̄::Coordinate, t::Time, source::JefimenkoSource, media::PropagationMedia; rtol)
+
+    Calculate the predicted Poynting vector 𝐏 observed at space-time point (`r̄`,`t`) due to
+    a particular `source`, transmitted through a particular `propagation media`. Calculate
+    the integral using a specified `relative tolerance`.
+
+    # Arguments
+    - `r̄::UnitfulCoordinateSystems.Coordinate`: spatial location of the observation point
+    - `t::Unitful.Time`: time at which the electric field is observed
+    - `source::JefimenkoSource`: source of the electric field
+    - `media::PropagationMedia`: properties of the propagation media
+
+    # Keywords
+    - `rtol::Real`: relative tolerance at which to solve the integral (optional)
+    """
+    function _𝐏(r̄::Coordinate, t::Unitful.Time, source::JefimenkoSource{T},
+                media::PropagationMedia; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
+        E = _𝐄(r̄,t,source,media; rtol=rtol)
+        H = _𝐇(r̄,t,source,media; rtol=rtol)
         return cross(E,H) .|> W/m^2
     end
 
-    export 𝐏
+    include("integrands_E.jl")
+    include("fields_E.jl")
+
+    include("integrands_H.jl")
+    include("fields_H.jl")
+
+    export 𝐄, 𝐇, 𝐏
 end
