@@ -36,12 +36,12 @@ function _integrand_E_R1(r̄′::Coordinate; r̄::Coordinate, t::Unitful.Time,
     tr_s::T = ustrip(T, s, tr)
 
     # Evaluate source function aliases, in implicit units as specified
-    ρₑ = source.ρₑ(r̄′, tr_s)                    # in [C m^-1]
-    ∂ρₑ_∂t = ForwardDiff.derivative(ρₑ, tr_s)   # in [C m^-1 s^-1]
-    Jₑ = source.Jₑ(r̄′, tr_s)                    # in [A]
-    ∂Jₑ_∂t = ForwardDiff.derivative(Jₑ, tr_s)   # in [A s^-1]
-    Jₕ = source.Jₕ(r̄′, tr_s)                     # in [V]
-    ∂Jₕ_∂t = ForwardDiff.derivative(Jₕ, tr_s)    # in [V s^-1]
+    ρₑ = source.ρₑ(r̄′, tr_s)                           # in [C m^-1]
+    ∂ρₑ_∂t = ForwardDiff.derivative(source.ρₑ, tr_s)   # in [C m^-1 s^-1]
+    Jₑ = source.Jₑ(r̄′, tr_s)                           # in [A]
+    ∂Jₑ_∂t = ForwardDiff.derivative(source.Jₑ, tr_s)   # in [A s^-1]
+    Jₕ = source.Jₕ(r̄′, tr_s)                            # in [V]
+    ∂Jₕ_∂t = ForwardDiff.derivative(source.Jₕ, tr_s)    # in [V s^-1]
 
     # Calculate first term, dimensional analysis of implied units commented on right
     term1a = ( (Δr̄_m ./ r_m^3) .* ρₑ )                  # [m/m³ * C/m]        -> [As/m³]
@@ -97,12 +97,12 @@ function _integrand_E_R2(r̄′::Coordinate; r̄::Coordinate, t::Unitful.Time,
     tr_s::T = ustrip(T, s, tr)
 
     # Source functions
-    ρₑ = source.ρₑ(r̄′, tr_s)                    # in [C m^-2]
-    ∂ρₑ_∂t = ForwardDiff.derivative(ρₑ, tr_s)   # in [C m^-2 s^-1]
-    Jₑ = source.Jₑ(r̄′, tr_s)                    # in [A m^-1]
-    ∂Jₑ_∂t = ForwardDiff.derivative(Jₑ, tr_s)   # in [A m^-1 s^-1]
-    Jₕ = source.Jₕ(r̄′, tr_s)                     # in [V m^-1]
-    ∂Jₕ_∂t = ForwardDiff.derivative(Jₕ, tr_s)    # in [V m^-1 s^-1]
+    ρₑ = source.ρₑ(r̄′, tr_s)                           # in [C m^-2]
+    ∂ρₑ_∂t = ForwardDiff.derivative(source.ρₑ, tr_s)   # in [C m^-2 s^-1]
+    Jₑ = source.Jₑ(r̄′, tr_s)                           # in [A m^-1]
+    ∂Jₑ_∂t = ForwardDiff.derivative(source.Jₑ, tr_s)   # in [A m^-1 s^-1]
+    Jₕ = source.Jₕ(r̄′, tr_s)                            # in [V m^-1]
+    ∂Jₕ_∂t = ForwardDiff.derivative(source.Jₕ, tr_s)    # in [V m^-1 s^-1]
 
     # Calculate first term
     term1a = ( (Δr̄_m ./ r_m^3) .* ρₑ )                  # [m/m³ * C/m²]     -> [As/m⁴]
@@ -158,12 +158,12 @@ function _integrand_E_R3(r̄′::Coordinate; r̄::Coordinate, t::Unitful.Time,
     tr_s::T = ustrip(T, s, tr)
 
     # Source functions
-    ρₑ = source.ρₑ(r̄′, tr_s)                    # in [C m^-3]
-    ∂ρₑ_∂t = ForwardDiff.derivative(ρₑ, tr_s)   # in [C m^-3 s^-1]
-    Jₑ = source.Jₑ(r̄′, tr_s)                    # in [A m^-2]
-    ∂Jₑ_∂t = ForwardDiff.derivative(Jₑ, tr_s)   # in [A m^-2 s^-1]
-    Jₕ = source.Jₕ(r̄′, tr_s)                     # in [V m^-2]
-    ∂Jₕ_∂t = ForwardDiff.derivative(Jₕ, tr_s)    # in [V m^-2 s^-1]
+    ρₑ = source.ρₑ(r̄′, tr_s)                           # in [C m^-3]
+    ∂ρₑ_∂t = ForwardDiff.derivative(source.ρₑ, tr_s)   # in [C m^-3 s^-1]
+    Jₑ = source.Jₑ(r̄′, tr_s)                           # in [A m^-2]
+    ∂Jₑ_∂t = ForwardDiff.derivative(source.Jₑ, tr_s)   # in [A m^-2 s^-1]
+    Jₕ = source.Jₕ(r̄′, tr_s)                            # in [V m^-2]
+    ∂Jₕ_∂t = ForwardDiff.derivative(source.Jₕ, tr_s)    # in [V m^-2 s^-1]
 
     # Calculate first term
     term1a = ( (Δr̄_m ./ r_m^3) .* ρₑ )                  # [m/m³ * C/m³]     -> [As/m⁵]
