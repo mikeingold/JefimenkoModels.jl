@@ -8,3 +8,9 @@ This solver implements a generalized variant of the Jefimenko equations that all
 
 This package remains in development status. Not all planned solver methods are yet implemented, and results have not yet been validated.
 
+Public Function | Implemented | Tested | Validated
+:--|-:-|-:-|-:-
+`E(LineSource_General)` | :white_check_mark: | :x: | :x:
+`H(LineSource_General)` | :white_check_mark: | :x: | :x:
+`E(SurfaceSource_DiskGeneral)` | :white_check_mark: | :x: | :x:
+`H(SurfaceSource_DiskGeneral)` | :white_check_mark: | :x: | :x:

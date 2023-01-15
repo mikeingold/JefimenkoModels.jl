@@ -16,12 +16,12 @@ Internal:
     - _integrand_E_R2(r)::Vector{T}          (implemented)
     - _integrand_E_R3(r)::Vector{T}          (implemented)
 - Magnetic Fields
-    - _E(r,t,source::T,media) where T isa LineSource_Straight_General    **TODO**
-    - _E(r,t,source::T,media) where T isa SurfaceSource_Disk_General     **TODO**
+    - _H(r,t,source::T,media) where T isa LineSource_Straight_General    (implemented)
+    - _H(r,t,source::T,media) where T isa SurfaceSource_Disk_General     (implemented)
 - Magnetic Integrands
-    - _integrand_H_R1(r)::Vector{Quantity}     **TODO**
-    - _integrand_H_R2(r)::Vector{T}            **TODO**
-    - _integrand_H_R3(r)::Vector{T}            **TODO**
+    - _integrand_H_R1(r)::Vector{Quantity}     (implemented)
+    - _integrand_H_R2(r)::Vector{T}            (implemented)
+    - _integrand_H_R3(r)::Vector{T}            (implemented)
 
 ## High Priority
 - Implement H-field integrand functions
@@ -36,7 +36,11 @@ Internal:
 ## Longer-Term Vision
 - Add a CITATION.bib
 - Evaluate whether Automatic Differentiation can be made to function through Integral solvers
-- Consider new integrand functions with ComponentArray-parameterized source values
+- Consider consolidating the integrand functions using ComponentArray-parameterized source values
+    - This would add complexity to the E/H functions, but would reduce code duplication here
+    - The main current difference between R1/R2/R3 is in commented dimensional analysis
+    - If Unitful evaluation is a serious performance penalty, then R1/R2/R3 could ustrip source
+      values into implied units and then call a consolidated/abstract integrand function
 
 ## Performance Improvement
 - Re-benchmark all of the solver code

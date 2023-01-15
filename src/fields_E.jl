@@ -2,7 +2,7 @@
     _𝐄(r̄::Coordinate, t::Time, source::JefimenkoSource, media::PropagationMedia; rtol)
 
 Calculate the electric field at (`r̄`,`t`) using the electric Jefimenko equation due to a
-particular `line source`, transmitted through a particular homogeneous `propagation media`.
+particular `source`, transmitted through a particular homogeneous `propagation media`.
 Calculate the integral using a specified `relative tolerance`.
 
 # Arguments
