@@ -2,7 +2,7 @@ module JefimenkoModels
     using LinearAlgebra, StaticArrays
     using Unitful, UnitfulCoordinateSystems
     using Unitful.DefaultSymbols: W, A, V, C, m, s, rad
-    using ForwardDiff, Integrals #HCubature, QuadGK
+    using ForwardDiff, Integrals
 
     __DEFAULT_RTOL = sqrt(eps())
 
@@ -13,11 +13,39 @@ module JefimenkoModels
     #                     RETARDED-TIME CALCULATIONS
     ###########################################################################
 
-    tᵣ(r̄::Coordinate, t::Unitful.Time, r̄′::Coordinate, c::Quantity)::Unitful.Time = t - (norm(r̄-r̄′)/c)
+    """
+        t′(r̄::Coordinate, t:Time, r̄′::Coordinate, c::Quantity)
 
-    tᵣ(r̄::Coordinate, t::Unitful.Time, r̄′::Coordinate, media::PropagationMedia_Simple)::Unitful.Time = t - (norm(r̄-r̄′)/media.c)
+    Calculate the retarded-time at a source point `r̄′` for an observer at the space-time
+    point (`r̄`,`t`) through a medium with speed of light `c`.
 
-    function tᵣ(r̄::Coordinate, t::Unitful.Time, r̄′::Coordinate, media::PropagationMedia_DiagonallyAnisotropic)::Unitful.Time
+    # Arguments
+    - `r̄::UnitfulCoordinateSystems.Coordinate`: spatial location of the observation point
+    - `t::Unitful.Time`: time at the observation point
+    - `r̄′::UnitfulCoordinateSystems.Coordinate`: spatial location of the source point
+    - `c::Quantity`: Unitful speed of light in the medium between r̄′ and r̄
+    """
+    function t′(r̄::Coordinate, t::Unitful.Time, r̄′::Coordinate, c::Quantity)::Unitful.Time
+        return (t - (norm(r̄-r̄′)/c))
+    end
+
+    """
+        t′(r̄::Coordinate, t:Time, r̄′::Coordinate, media::PropagationMedia)
+
+    Calculate the retarded-time at a source point `r̄′` for an observer at the space-time
+    point (`r̄`,`t`) through a `propagation medium`.
+
+    # Arguments
+    - `r̄::UnitfulCoordinateSystems.Coordinate`: spatial location of the observation point
+    - `t::Unitful.Time`: time at the observation point
+    - `r̄′::UnitfulCoordinateSystems.Coordinate`: spatial location of the source point
+    - `media::PropagationMedia`: properties of the medium between r̄′ and r̄
+    """
+    function t′(r̄::Coordinate, t::Unitful.Time, r̄′::Coordinate, media::PropagationMedia_Simple)::Unitful.Time
+        return t′(r̄, t, r̄′, media.c)
+    end
+
+    function t′(r̄::Coordinate, t::Unitful.Time, r̄′::Coordinate, media::PropagationMedia_DiagonallyAnisotropic)::Unitful.Time
         Δr̄ = SVector(r̄ - r̄′)
         Δt = norm(media.c^-1 * Δr̄) |> unit(t)
         return (t - Δt)
@@ -106,7 +134,7 @@ module JefimenkoModels
     # Keywords
     - `rtol::Real`: relative tolerance at which to solve the integral (optional)
     """
-    function _𝐏(r̄::Coordinate, t::Unitful.Time, source::JefimenkoSource{T},
+    function _𝐏(r̄::Coordinate, t::Unitful.Time, source::AbstractJefimenkoSource{T},
                 media::PropagationMedia; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
         E = _𝐄(r̄,t,source,media; rtol=rtol)
         H = _𝐇(r̄,t,source,media; rtol=rtol)

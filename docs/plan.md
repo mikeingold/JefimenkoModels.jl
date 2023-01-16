@@ -1,26 +1,20 @@
 # TODO
 
-## High Priority
-- Compare results of E-field calculations with prior animation script
-- Update abstract type names to `Abstract_*`
-- Validate results of calculations against FEKO
+## Short Term
+- Implement E/H(VolumeSource_Rectangular)
+- Benchmark the solvers
+    - HCubature vs QuadGK for LineSource's
+    - Compare 3D volume source performance with JefiGPU
 
 ## Medium Term
-- Determine if performance benefits justify specialized integral functions for non-general sources
-    - Consider either adding functions to generalize them, or just removing them totally
-- Fully populate the README Status with all struct types and implementation status
+- Develop constructor methods for sources and models
 
 ## Longer-Term Vision
 - Add a CITATION.bib
-- Evaluate whether Automatic Differentiation can be made to function through Integral solvers
+- Evaluate whether Automatic Differentiation can be made to operate through solutions
+- Consider permitting sources to have a variable center/orientation
 - Consider consolidating the integrand functions using ComponentArray-parameterized source values
     - This would add complexity to the E/H functions, but would reduce code duplication here
     - The main current difference between R1/R2/R3 is in commented dimensional analysis
     - If Unitful evaluation is a serious performance penalty, then R1/R2/R3 could ustrip source
       values into implied units and then call a consolidated/abstract integrand function
-
-## Performance Improvement
-- Re-benchmark all of the solver code
-- Compare 3D volume source performance with JefiGPU
-- Determine why H function is taking 3x as long to compute as E for same arguments
-    - Also requires about 3x the memory/allocations, probably something to do with integral solver

@@ -14,7 +14,7 @@ Calculate the integral using a specified `relative tolerance`.
 # Keywords
 - `rtol::Real`: relative tolerance at which to solve the integral (optional)
 """
-function _𝐄(r̄::Coordinate, t::Unitful.Time, source::LineSource_Straight_General{T},
+function _𝐄(r̄::Coordinate, t::Unitful.Time, source::LineSource_Straight{T},
             media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
     # Calculate the length of the line source from starting point ā to ending point b̄
     dmax::Unitful.Length = norm(source.b̄ - source.ā)
@@ -36,7 +36,7 @@ function _𝐄(r̄::Coordinate, t::Unitful.Time, source::LineSource_Straight_Gen
         r̄′ = CoordinateCartesian(trek[1], trek[2], trek[3])
 
         val = _integrand_E_R1(r̄′; source=source, media=media, r̄=r̄, t=t)
-        ustrip.(T, V/m^2, val)
+        return ustrip.(T, V/m^2, val)
     end
 
     # Define the integrand as a f(d) traveled along line source, solve it
@@ -45,7 +45,7 @@ function _𝐄(r̄::Coordinate, t::Unitful.Time, source::LineSource_Straight_Gen
     return ( (1/4π) .* (sol.u) .* (V/m) )             # in [V/m² * m] -> [V/m]
 end
 
-function _𝐄(r̄::Coordinate, t::Unitful.Time, source::SurfaceSource_Disk_General{T},
+function _𝐄(r̄::Coordinate, t::Unitful.Time, source::SurfaceSource_Disk{T},
     media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
     function disk_integrand(ū,p)
         # Assign aliases to ū values and convert to a Coordinate
