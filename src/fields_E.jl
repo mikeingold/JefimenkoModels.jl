@@ -17,21 +17,32 @@ Calculate the integral using a specified `relative tolerance`.
 function _𝐄(r̄::Coordinate, t::Unitful.Time, source::LineSource_Straight_General{T},
             media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
     # Calculate the length of the line source from starting point ā to ending point b̄
-    d_max = norm(source.b̄ - source.ā)
+    dmax::Unitful.Length = norm(source.b̄ - source.ā)
 
-    # Parameterize a straight line from ā to b̄ according to the distance `d` traveled
-    function ū′(d::Unitful.Length)
+    function integrand(u,p)
+        d::Unitful.Length = u[1] * m
+        # Parameterize a straight line from ā to b̄ according to the distance traveled
         # Get a unit vector pointing from ā -> b̄
-        û = (source.b̄ - source.ā) / d_max
+        û = (source.b̄ - source.ā) ./ dmax
+
+        #= TODO Replace the following hack
+        #       Can't add a Coordinate to an SVector
+        #       Implement SVector(Coordinate) and Coordinate(SVector)
+        #       Implement +(::CoordinateCartesian, ::SVector{T,3}) where T<:Real
         # Start at ā, progress the specified distance in direction û
         source.ā + ( d .* û )
+        =#
+        trek = d .* û
+        r̄′ = CoordinateCartesian(trek[1], trek[2], trek[3])
+
+        val = _integrand_E_R1(r̄′; source=source, media=media, r̄=r̄, t=t)
+        ustrip.(T, V/m^2, val)
     end
 
-    # Define the integrand as a f(d) and solve it
-    integrand(d,p) = _integrand_E_R1(ū′(d); source=source, media=media, r̄=r̄, t=t)
-    prob = IntegralProblem(integrand, 0.0, d_max)
-    sol = solve(prob, QuadGKJL(), reltol=rtol)
-    return ( (1/4π) .* (sol.u) )
+    # Define the integrand as a f(d) traveled along line source, solve it
+    prob = IntegralProblem(integrand, zeros(T,1), [ustrip(T,m,dmax)])
+    sol = solve(prob, HCubatureJL(), reltol=rtol)
+    return ( (1/4π) .* (sol.u) .* (V/m) )             # in [V/m² * m] -> [V/m]
 end
 
 function _𝐄(r̄::Coordinate, t::Unitful.Time, source::SurfaceSource_Disk_General{T},

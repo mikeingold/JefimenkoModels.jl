@@ -1,10 +1,8 @@
 module JefimenkoModels
-    using ForwardDiff, HCubature, Integrals
-    using LinearAlgebra
-    using StaticArrays
-    using Unitful
+    using LinearAlgebra, StaticArrays
+    using Unitful, UnitfulCoordinateSystems
     using Unitful.DefaultSymbols: W, A, V, C, m, s, rad
-    using UnitfulCoordinateSystems
+    using ForwardDiff, Integrals #HCubature, QuadGK
 
     __DEFAULT_RTOL = sqrt(eps())
 

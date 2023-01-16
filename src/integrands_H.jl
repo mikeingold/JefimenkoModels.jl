@@ -50,12 +50,12 @@ function _integrand_H_R1(r̄′::Coordinate; r̄::Coordinate, t::Unitful.Time,
     term1  = ( (μ^-1) .* (term1a + term1b - term1c) )    # [Am/Vs * Vs/m³] -> [A/m²]
     
     # Calculate second term
-    term2a = ( Jₑ ./ r_m^3 )                       # [A/m / m³] -> [A/m⁴]
-    term2b = ( (1 / r_m^2) .* (c^-1) .* ∂Jₑ_∂t )   # [1/m² * s/m * A/ms] -> [A/m⁴]
-    term2  = cross((term2a + term2b), Δr̄_m)        # [A/m⁴ * m] -> [A/m³]
+    term2a = ( Jₑ ./ r_m^3 )                       # [A / m³] -> [A/m³]
+    term2b = ( (1 / r_m^2) .* (c^-1) .* ∂Jₑ_∂t )   # [1/m² * s/m * A/s] -> [A/m³]
+    term2  = cross((term2a + term2b), Δr̄_m)        # [A/m³ * m] -> [A/m²]
 
-    # Combine terms and return, in implicit units of [A/m²]
-    return (term1 - term2)
+    # Combine terms, apply appropriate units
+    return (term1 - term2) * (A/m^2)
 end
 
 """
