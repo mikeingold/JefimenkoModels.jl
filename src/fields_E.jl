@@ -46,7 +46,7 @@ function _𝐄(r̄::Coordinate, t::Unitful.Time, source::LineSource_Straight{T},
 end
 
 function _𝐄(r̄::Coordinate, t::Unitful.Time, source::SurfaceSource_Disk{T},
-    media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
+            media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
     function disk_integrand(ū,p)
         # Assign aliases to ū values and convert to a Coordinate
         (ρ_m, ϕ_rad) = ū
@@ -56,12 +56,36 @@ function _𝐄(r̄::Coordinate, t::Unitful.Time, source::SurfaceSource_Disk{T},
         return _integrand_E_R2(r̄′; r̄=r̄, t=t, source=source, media=media) * ρ_m
     end
 
-    # Define and solve the integral problem over a circular aperture,
-    #   in implied units [V/m² * m] -> [V/m]
+    # Get integration limits: ρ ∈ [0,ρ₀], ϕ ∈ [0,2π]
     ρ₀_m = ustrip(T, m, source.ρ₀)
     lb = [zero(T), zero(T)]
     ub = [ρ₀_m, T(2π)]
+
+    # Define and solve the integral problem over a circular aperture,
+    #   in implied units [V/m² * m] -> [V/m]
     prob = IntegralProblem(disk_integrand, lb, ub)
     sol = solve(prob, HCubatureJL(), reltol=rtol)
+    return ( (1/4π) .* (sol.u) .* (V/m) )
+end
+
+function _𝐄(r̄::Coordinate, t::Unitful.Time, source::SurfaceSource_Rectangle{T},
+            media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
+    function integrand(u,p)
+        (x_m, y_m) = u
+        r̄′ = CoordinateCartesian(x_m*m, y_m*m, 0.0m)
+        return _integrand_E_R2(r̄′; r̄=r̄, t=t, source=source, media=media)  # implied [V/m³]
+    end
+
+    # Get integration limits
+    lim_min_x_m = ustrip(T, m, source.xlims[1])
+    lim_max_x_m = ustrip(T, m, source.xlims[2])
+    lim_min_y_m = ustrip(T, m, source.ylims[1])
+    lim_max_y_m = ustrip(T, m, source.ylims[2])
+    lb = [lim_min_x_m, lim_min_y_m]
+    ub = [lim_max_x_m, lim_max_y_m]
+
+    # Define and solve the integral problem over rectangular aperture
+    prob = IntegralProblem(integrand, lb, ub)
+    sol = solve(prob, HCubatureJL(), reltol=rtol)     # implied [V/m³ * m²] -> [V/m]
     return ( (1/4π) .* (sol.u) .* (V/m) )
 end

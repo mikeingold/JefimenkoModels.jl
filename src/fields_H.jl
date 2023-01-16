@@ -64,3 +64,25 @@ function _𝐇(r̄::Coordinate, t::Unitful.Time, source::SurfaceSource_Disk{T},
     sol = solve(prob, HCubatureJL(), reltol=rtol)     # in implied units [A/m² * m] -> [A/m]
     return ( (1/4π) .* (sol.u) .* (A/m) )
 end
+
+function _𝐇(r̄::Coordinate, t::Unitful.Time, source::SurfaceSource_Rectangle{T},
+            media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
+    function integrand(u,p)
+        (x_m, y_m) = u
+        r̄′ = CoordinateCartesian(x_m*m, y_m*m, 0.0m)
+        return _integrand_H_R2(r̄′; r̄=r̄, t=t, source=source, media=media)  # implied [A/m³]
+    end
+
+    # Get integration limits
+    lim_min_x_m = ustrip(T, m, source.xlims[1])
+    lim_max_x_m = ustrip(T, m, source.xlims[2])
+    lim_min_y_m = ustrip(T, m, source.ylims[1])
+    lim_max_y_m = ustrip(T, m, source.ylims[2])
+    lb = [lim_min_x_m, lim_min_y_m]
+    ub = [lim_max_x_m, lim_max_y_m]
+
+    # Define and solve the integral problem over rectangular aperture
+    prob = IntegralProblem(integrand, lb, ub)
+    sol = solve(prob, HCubatureJL(), reltol=rtol)     # implied [A/m³ * m²] -> [A/m]
+    return ( (1/4π) .* (sol.u) .* (A/m) )
+end
