@@ -12,14 +12,14 @@ This package remains in development status. Not all planned solver methods are y
 |:---|:---:|:---:|:---:|
 | `E(LineSource_Straight)`       | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | `E(SurfaceSource_Disk)`        | :white_check_mark: | :white_check_mark: | :x: |
-| `E(SurfaceSource_Rectangle)`   | :x: | :x: | :x: |
-| `E(VolumeSource_Rectangular)`  | :x: | :x: | :x: |
+| `E(SurfaceSource_Rectangle)`   | :white_check_mark: | :x: | :x: |
+| `E(VolumeSource_Rectangular)`  | :white_check_mark: | :x: | :x: |
 | `E(VolumeSource_Cylinder)`     | :x: | :x: | :x: |
 | `E(VolumeSource_Sphere)`       | :x: | :x: | :x: |
 | `H(LineSource_Straight)`       | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | `H(SurfaceSource_Disk)`        | :white_check_mark: | :white_check_mark: | :x: |
-| `H(SurfaceSource_Rectangle)`   | :x: | :x: | :x: |
-| `H(VolumeSource_Rectangular)`  | :x: | :x: | :x: |
+| `H(SurfaceSource_Rectangle)`   | :white_check_mark: | :x: | :x: |
+| `H(VolumeSource_Rectangular)`  | :white_check_mark: | :x: | :x: |
 | `H(VolumeSource_Cylinder)`     | :x: | :x: | :x: |
 | `H(VolumeSource_Sphere)`       | :x: | :x: | :x: |
 

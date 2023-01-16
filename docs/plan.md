@@ -1,12 +1,15 @@
 # TODO
 
 ## Short Term
-- Implement E/H(VolumeSource_Rectangular)
+- Rename internal functions with double-underscore
+- Remove unicode from function names
 - Benchmark the solvers
     - HCubature vs QuadGK for LineSource's
     - Compare 3D volume source performance with JefiGPU
 
 ## Medium Term
+- Implement E/H(VolumeSource_Cylinder)
+- Implement E/H(VolumeSource_Sphere)
 - Develop constructor methods for sources and models
 
 ## Longer-Term Vision
