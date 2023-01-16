@@ -3,7 +3,7 @@
 ###########################################################################
 
 """
-    _𝐄(r̄::Coordinate, t::Time, source::JefimenkoSource, media::PropagationMedia; rtol)
+    __E(r̄::Coordinate, t::Time, source::JefimenkoSource, media::PropagationMedia; rtol)
 
 Calculate the electric field at (`r̄`,`t`) using the electric Jefimenko equation due to a
 particular `source`, transmitted through a particular homogeneous `propagation media`.
@@ -18,7 +18,7 @@ Calculate the integral using a specified `relative tolerance`.
 # Keywords
 - `rtol::Real`: relative tolerance at which to solve the integral (optional)
 """
-function _𝐄(r̄::Coordinate, t::Unitful.Time, source::LineSource_Straight{T},
+function __E(r̄::Coordinate, t::Unitful.Time, source::LineSource_Straight{T},
             media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
     # Calculate the length of the line source from starting point ā to ending point b̄
     dmax::Unitful.Length = norm(source.b̄ - source.ā)
@@ -39,7 +39,7 @@ function _𝐄(r̄::Coordinate, t::Unitful.Time, source::LineSource_Straight{T},
         trek = d .* û
         r̄′ = CoordinateCartesian(trek[1], trek[2], trek[3])
 
-        val = _integrand_E_R1(r̄′; source=source, media=media, r̄=r̄, t=t)
+        val = __integrand_E_R1(r̄′; source=source, media=media, r̄=r̄, t=t)
         return ustrip.(T, V/m^2, val)
     end
 
@@ -53,7 +53,7 @@ end
 #                        SURFACE SOURCES
 ###########################################################################
 
-function _𝐄(r̄::Coordinate, t::Unitful.Time, source::SurfaceSource_Disk{T},
+function __E(r̄::Coordinate, t::Unitful.Time, source::SurfaceSource_Disk{T},
             media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
     function disk_integrand(ū,p)
         # Assign aliases to ū values and convert to a Coordinate
@@ -61,7 +61,7 @@ function _𝐄(r̄::Coordinate, t::Unitful.Time, source::SurfaceSource_Disk{T},
         r̄′ = CoordinatePolar(ρ_m*m, ϕ_rad*rad)
         # Return integrand scaled by the radial integration factor,
         #   in implied units [V/m³ * m] -> [V/m²]
-        return _integrand_E_R2(r̄′; r̄=r̄, t=t, source=source, media=media) * ρ_m
+        return __integrand_E_R2(r̄′; r̄=r̄, t=t, source=source, media=media) * ρ_m
     end
 
     # Get integration limits: ρ ∈ [0,ρ₀], ϕ ∈ [0,2π]
@@ -76,41 +76,41 @@ function _𝐄(r̄::Coordinate, t::Unitful.Time, source::SurfaceSource_Disk{T},
     return ( (1/4π) .* (sol.u) .* (V/m) )
 end
 
-function _𝐄(r̄::Coordinate, t::Unitful.Time, source::SurfaceSource_Rectangle{T},
-    media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
-function integrand(u,p)
-(x_m, y_m) = u
-r̄′ = CoordinateCartesian(x_m*m, y_m*m, 0.0m)
-return _integrand_E_R2(r̄′; r̄=r̄, t=t, source=source, media=media)  # implied [V/m³]
-end
+function __E(r̄::Coordinate, t::Unitful.Time, source::SurfaceSource_Rectangle{T},
+            media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
+    function integrand(u,p)
+        (x_m, y_m) = u
+        r̄′ = CoordinateCartesian(x_m*m, y_m*m, 0.0m)
+        return __integrand_E_R2(r̄′; r̄=r̄, t=t, source=source, media=media)  # implied [V/m³]
+    end
 
-# Get integration limits
-(lim_min_x_m, lim_max_x_m) = ustrip.(T, m, source.xlims)
-(lim_min_y_m, lim_max_y_m) = ustrip.(T, m, source.ylims)
-lb = [lim_min_x_m, lim_min_y_m]
-ub = [lim_max_x_m, lim_max_y_m]
+    # Get integration limits
+    (lim_min_x_m, lim_max_x_m) = ustrip.(T, m, source.xlims)
+    (lim_min_y_m, lim_max_y_m) = ustrip.(T, m, source.ylims)
+    lb = [lim_min_x_m, lim_min_y_m]
+    ub = [lim_max_x_m, lim_max_y_m]
 
-# Define and solve the integral problem over rectangular aperture
-prob = IntegralProblem(integrand, lb, ub)
-sol = solve(prob, HCubatureJL(), reltol=rtol)     # implied [V/m³ * m²] -> [V/m]
-return ( (1/4π) .* (sol.u) .* (V/m) )
+    # Define and solve the integral problem over rectangular aperture
+    prob = IntegralProblem(integrand, lb, ub)
+    sol = solve(prob, HCubatureJL(), reltol=rtol)     # implied [V/m³ * m²] -> [V/m]
+    return ( (1/4π) .* (sol.u) .* (V/m) )
 end
 
 ###########################################################################
 #                        VOLUME SOURCES
 ###########################################################################
 
-function _𝐄(r̄::Coordinate, t::Unitful.Time, source::VolumeSource_Cylinder{T},
+function __E(r̄::Coordinate, t::Unitful.Time, source::VolumeSource_Cylinder{T},
     media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
     error("Solver not yet implemented.")
 end
 
-function _𝐄(r̄::Coordinate, t::Unitful.Time, source::VolumeSource_Rectangular{T},
+function __E(r̄::Coordinate, t::Unitful.Time, source::VolumeSource_Rectangular{T},
     media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
     function integrand(u,p)
         (x_m, y_m, z_m) = u
         r̄′ = CoordinateCartesian(x_m*m, y_m*m, z_m)
-        return _integrand_E_R3(r̄′; r̄=r̄, t=t, source=source, media=media)  # implied [V/m⁴]
+        return __integrand_E_R3(r̄′; r̄=r̄, t=t, source=source, media=media)  # implied [V/m⁴]
     end
 
     # Get integration limits
@@ -126,7 +126,7 @@ function _𝐄(r̄::Coordinate, t::Unitful.Time, source::VolumeSource_Rectangula
     return ( (1/4π) .* (sol.u) .* (V/m) )
 end
 
-function _𝐄(r̄::Coordinate, t::Unitful.Time, source::VolumeSource_Sphere{T},
+function __E(r̄::Coordinate, t::Unitful.Time, source::VolumeSource_Sphere{T},
     media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
     error("Solver not yet implemented.")
 end

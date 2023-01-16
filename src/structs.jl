@@ -2,6 +2,7 @@
 #                        JEFIMENKOMODEL SOURCES
 ################################################################################
 
+# Type T defines the data type used for calculation, typically <: AbstractFloat
 abstract type AbstractJefimenkoSource{T} end
 
     ############################################################################

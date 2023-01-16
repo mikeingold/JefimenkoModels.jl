@@ -1,5 +1,5 @@
 """
-    _integrand_H_R1(r̄′::Coordinate; source::LineSource{T}, media::PropagationMedia
+    __integrand_H_R1(r̄′::Coordinate; source::LineSource{T}, media::PropagationMedia
                     r̄::Coordinate, t::Time)  where {T<:AbstractFloat}
 
 Calculate the integrand function for the magnetic Jefimenko equation of a one-dimensional
@@ -18,7 +18,7 @@ Calculate the integrand function for the magnetic Jefimenko equation of a one-di
 # Returns
 - `Vector{Quantity}`: the predicted vector-valued integrand value with appropriate units
 """
-function _integrand_H_R1(r̄′::Coordinate; r̄::Coordinate, t::Unitful.Time,
+function __integrand_H_R1(r̄′::Coordinate; r̄::Coordinate, t::Unitful.Time,
                          source::AbstractLineSource{T}, media::PropagationMedia_Simple
                          ) where {T<:AbstractFloat}
     # Get spatial properties, in implicit units of meters
@@ -57,7 +57,7 @@ function _integrand_H_R1(r̄′::Coordinate; r̄::Coordinate, t::Unitful.Time,
 end
 
 """
-    _integrand_H_R2(r̄′::Coordinate; source::SurfaceSource{T}, media::PropagationMedia
+    __integrand_H_R2(r̄′::Coordinate; source::SurfaceSource{T}, media::PropagationMedia
                     r̄::Coordinate, t::Time) where {T<:AbstractFloat}
 
 Calculate the integrand function for the magnetic Jefimenko equation of a two-dimensional
@@ -77,7 +77,7 @@ Calculate the integrand function for the magnetic Jefimenko equation of a two-di
 - `Vector{T}`: the predicted vector-valued integrand value, in implicit units [V/m³]. (The
 `HCubature` solver does not yet support `Unitful` types.)
 """
-function _integrand_H_R2(r̄′::Coordinate; r̄::Coordinate, t::Unitful.Time,
+function __integrand_H_R2(r̄′::Coordinate; r̄::Coordinate, t::Unitful.Time,
                          source::AbstractSurfaceSource{T}, media::PropagationMedia_Simple
                          ) where {T<:AbstractFloat}
     # Get spatial properties, in implicit units of meters
@@ -116,7 +116,7 @@ function _integrand_H_R2(r̄′::Coordinate; r̄::Coordinate, t::Unitful.Time,
 end
 
 """
-    _integrand_H_R3(r̄′::Coordinate; source::VolumeSource{T}, media::PropagationMedia
+    __integrand_H_R3(r̄′::Coordinate; source::VolumeSource{T}, media::PropagationMedia
                     r̄::Coordinate, t::Time) where {T<:AbstractFloat}
 
 Calculate the integrand function for the magnetic Jefimenko equation of a two-dimensional
@@ -136,7 +136,7 @@ Calculate the integrand function for the magnetic Jefimenko equation of a two-di
 - `Vector{T}`: the predicted vector-valued integrand value, in implicit units [V/m³]. (The
 `HCubature` solver does not yet support `Unitful` types.)
 """
-function _integrand_H_R3(r̄′::Coordinate; r̄::Coordinate, t::Unitful.Time,
+function __integrand_H_R3(r̄′::Coordinate; r̄::Coordinate, t::Unitful.Time,
                          source::AbstractVolumeSource{T}, media::PropagationMedia_Simple
                          ) where {T<:AbstractFloat}
     # Get spatial properties, in implicit units of meters

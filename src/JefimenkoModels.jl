@@ -1,8 +1,8 @@
 module JefimenkoModels
-    using LinearAlgebra, StaticArrays
-    using Unitful, UnitfulCoordinateSystems
+    using LinearAlgebra, StaticArrays, Unitful, UnitfulCoordinateSystems
     using Unitful.DefaultSymbols: W, A, V, C, m, s, rad
     using ForwardDiff, Integrals
+        # add Integrals (QuadGK) after Unitful due to bug (https://github.com/JuliaMath/QuadGK.jl/issues/63)
 
     __DEFAULT_RTOL = sqrt(eps())
 
@@ -56,7 +56,7 @@ module JefimenkoModels
     ###########################################################################
 
     """
-        𝐄(r̄::Coordinate, t::Time, model::JefimenkoModel; rtol=sqrt(eps))
+        H(r̄::Coordinate, t::Time, model::JefimenkoModel; rtol=sqrt(eps))
 
     Calculate the predicted electric field 𝐇 observed at space-time point (`r̄`,`t`) using
     the electric Jefimenko equation for a particular `model`. Calculate the integral using
@@ -70,14 +70,14 @@ module JefimenkoModels
     # Keywords
     - `rtol::Real`: relative tolerance at which to solve the integral (optional)
     """
-    function 𝐄(r̄::Coordinate, t::Unitful.Time, model::JefimenkoModel; rtol=__DEFAULT_RTOL)
-        # Superimpose the contributions of the 𝐄(r̄,t) produced by each source in model
-        E_contrib(source) = _𝐄(r̄, t, source, model.media; rtol=rtol)
+    function E(r̄::Coordinate, t::Unitful.Time, model::JefimenkoModel; rtol=__DEFAULT_RTOL)
+        # Superimpose the contributions of the E(r̄,t) produced by each source in model
+        E_contrib(source) = __E(r̄, t, source, model.media; rtol=rtol)
         return mapreduce(E_contrib, +, model.sources)
     end
 
     """
-        𝐇(r̄::Coordinate, t::Time, model::JefimenkoModel; rtol=sqrt(eps))
+        H(r̄::Coordinate, t::Time, model::JefimenkoModel; rtol=sqrt(eps))
 
     Calculate the predicted magnetic field 𝐇 observed at space-time point (`r̄`,`t`) using
     the magnetic Jefimenko equation for a particular `model`. Calculate the integral using
@@ -91,14 +91,14 @@ module JefimenkoModels
     # Keywords
     - `rtol::Real`: relative tolerance at which to solve the integral (optional)
     """
-    function 𝐇(r̄::Coordinate, t::Unitful.Time, model::JefimenkoModel; rtol=__DEFAULT_RTOL)
+    function H(r̄::Coordinate, t::Unitful.Time, model::JefimenkoModel; rtol=__DEFAULT_RTOL)
         # Superimpose the contributions of the 𝐇(r̄,t) produced by each source in model
-        H_contrib(source) = _𝐇(r̄, t, source, model.media; rtol=rtol)
+        H_contrib(source) = __H(r̄, t, source, model.media; rtol=rtol)
         return mapreduce(H_contrib, +, model.sources) 
     end
 
     """
-        𝐏(r̄::Coordinate, t::Time, model::JefimenkoModel; rtol=sqrt(eps))
+        P(r̄::Coordinate, t::Time, model::JefimenkoModel; rtol=sqrt(eps))
 
     Calculate the predicted Poynting vector 𝐏 observed at space-time point (`r̄`,`t`) using
     the electric and magnetic Jefimenko equations for a particular `model`. Calculate the
@@ -112,14 +112,14 @@ module JefimenkoModels
     # Keywords
     - `rtol::Real`: relative tolerance at which to solve the integral (optional)
     """
-    function 𝐏(r̄::Coordinate, t::Unitful.Time, model::JefimenkoModel; rtol=__DEFAULT_RTOL)
-        E = 𝐄(r̄,t,model; rtol=rtol)
-        H = 𝐇(r̄,t,model; rtol=rtol)
-        return cross(E,H) .|> W/m^2
+    function P(r̄::Coordinate, t::Unitful.Time, model::JefimenkoModel; rtol=__DEFAULT_RTOL)
+        Ert = E(r̄,t,model; rtol=rtol)
+        Hrt = H(r̄,t,model; rtol=rtol)
+        return cross(Ert,Hrt) .|> W/m^2
     end
 
     """
-        _𝐏(r̄::Coordinate, t::Time, source::JefimenkoSource, media::PropagationMedia; rtol)
+        __P(r̄::Coordinate, t::Time, source::JefimenkoSource, media::PropagationMedia; rtol)
 
     Calculate the predicted Poynting vector 𝐏 observed at space-time point (`r̄`,`t`) due to
     a particular `source`, transmitted through a particular `propagation media`. Calculate
@@ -134,11 +134,11 @@ module JefimenkoModels
     # Keywords
     - `rtol::Real`: relative tolerance at which to solve the integral (optional)
     """
-    function _𝐏(r̄::Coordinate, t::Unitful.Time, source::AbstractJefimenkoSource{T},
+    function __P(r̄::Coordinate, t::Unitful.Time, source::AbstractJefimenkoSource{T},
                 media::AbstractPropagationMedia; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
-        E = _𝐄(r̄,t,source,media; rtol=rtol)
-        H = _𝐇(r̄,t,source,media; rtol=rtol)
-        return cross(E,H) .|> W/m^2
+        Ert = __E(r̄,t,source,media; rtol=rtol)
+        Hrt = __H(r̄,t,source,media; rtol=rtol)
+        return cross(Ert,Hrt) .|> W/m^2
     end
 
     include("integrands_E.jl")
@@ -147,5 +147,5 @@ module JefimenkoModels
     include("integrands_H.jl")
     include("fields_H.jl")
 
-    export 𝐄, 𝐇, 𝐏
+    export E, H, P
 end
