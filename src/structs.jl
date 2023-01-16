@@ -109,7 +109,7 @@ export PropagationMedia_Simple, PropagationMedia_DiagonallyAnisotropic
 ################################################################################
 
 struct JefimenkoModel{T}
-    media::PropagationMedia
+    media::AbstractPropagationMedia
     sources::Vector{AbstractJefimenkoSource{T}}
     metadata::Dict{Symbol,Any}
 end

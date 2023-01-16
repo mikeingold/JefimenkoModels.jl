@@ -135,7 +135,7 @@ module JefimenkoModels
     - `rtol::Real`: relative tolerance at which to solve the integral (optional)
     """
     function _𝐏(r̄::Coordinate, t::Unitful.Time, source::AbstractJefimenkoSource{T},
-                media::PropagationMedia; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
+                media::AbstractPropagationMedia; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
         E = _𝐄(r̄,t,source,media; rtol=rtol)
         H = _𝐇(r̄,t,source,media; rtol=rtol)
         return cross(E,H) .|> W/m^2
