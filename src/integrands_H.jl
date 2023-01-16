@@ -53,7 +53,7 @@ function _integrand_H_R1(r̄′::Coordinate; r̄::Coordinate, t::Unitful.Time,
     term2  = cross((term2a + term2b), Δr̄_m)        # [A/m³ * m] -> [A/m²]
 
     # Combine terms, apply appropriate units
-    return (term1 - term2) * (A/m^2)
+    return (term1 + term2) * (A/m^2)
 end
 
 """
@@ -112,7 +112,7 @@ function _integrand_H_R2(r̄′::Coordinate; r̄::Coordinate, t::Unitful.Time,
     term2  = cross((term2a + term2b), Δr̄_m)        # [A/m⁴ * m] -> [A/m³]
 
     # Combine terms and return, in implicit units of [A/m³]
-    return (term1 - term2)
+    return (term1 + term2)
 end
 
 """
@@ -171,5 +171,5 @@ function _integrand_H_R3(r̄′::Coordinate; r̄::Coordinate, t::Unitful.Time,
     term2  = cross((term2a + term2b), Δr̄_m)        # [A/m⁵ * m] -> [A/m⁴]
 
     # Combine terms and return, in implicit units of [A/m⁴]
-    return (term1 - term2)
+    return (term1 + term2)
 end
