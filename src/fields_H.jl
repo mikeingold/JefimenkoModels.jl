@@ -3,14 +3,14 @@
 ###########################################################################
 
 """
-    __H(r̄::Coordinate, t::Time, source::JefimenkoSource, media::PropagationMedia; rtol)
+    __H(r̄::AbstractCoordinate, t::Time, source::JefimenkoSource, media::PropagationMedia; rtol)
 
 Calculate the magnetic field at (`r̄`,`t`) using the electric Jefimenko equation due to a
 particular `source`, transmitted through a particular homogeneous `propagation media`.
 Calculate the integral using a specified `relative tolerance`.
 
 # Arguments
-- `r̄::UnitfulCoordinateSystems.Coordinate`: spatial location of the observation point
+- `r̄::UnitfulCoordinateSystems.AbstractCoordinate`: spatial location of the observation point
 - `t::Unitful.Time`: time at which the magnetic field is observed
 - `source::JefimenkoSource`: source of the magnetic field
 - `media::PropagationMedia`: properties of the propagation media
@@ -18,13 +18,15 @@ Calculate the integral using a specified `relative tolerance`.
 # Keywords
 - `rtol::Real`: relative tolerance at which to solve the integral (optional)
 """
-function __H(r̄::Coordinate, t::Unitful.Time, source::LineSource_Straight{T},
+function __H(r̄::AbstractCoordinate, t::Unitful.Time, source::LineSource_Straight{T},
             media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
     # Calculate the length of the line source from starting point ā to ending point b̄
     dmax::Unitful.Length = norm(source.b̄ - source.ā)
 
-    function integrand(u,p)
-        d::Unitful.Length = u[1] * m
+    # Calculate the integrand H-field vector in implied units [A/m²]
+    function integrand(u::Real, p)::Vector{T}
+        d::Unitful.Length = u
+
         # Parameterize a straight line from ā to b̄ according to the distance traveled
         # Get a unit vector pointing from ā -> b̄
         û = (source.b̄ - source.ā) ./ dmax
@@ -39,13 +41,18 @@ function __H(r̄::Coordinate, t::Unitful.Time, source::LineSource_Straight{T},
         trek = d .* û
         r̄′ = CoordinateCartesian(trek[1], trek[2], trek[3])
 
-        val = __integrand_H_R1(r̄′; source=source, media=media, r̄=r̄, t=t)
-        return ustrip.(T, A/m^2, val)
+        intH = __integrand_H_R1(r̄′; source=source, media=media, r̄=r̄, t=t)
+        return ustrip.(T, A/m^2, intH)
     end
 
+    #= TESTING QuadGK vs HCubatureJL
     # Define the integrand as a f(d) traveled along line source, solve it
     prob = IntegralProblem(integrand, zeros(T,1), [ustrip(T,m,dmax)])
     sol = solve(prob, HCubatureJL(), reltol=rtol)     # in implied units [A/m² * m] -> [A/m]
+    return ( (1/4π) .* (sol.u) .* (A/m) )
+    =#
+    prob = IntegralProblem(integrand, zero(T), ustrip(T,m,dmax))
+    sol = solve(prob, QuadGKJL(), reltol=rtol)     # in units [A/m² * m] -> [A/m]
     return ( (1/4π) .* (sol.u) .* (A/m) )
 end
 
@@ -53,7 +60,7 @@ end
 #                        SURFACE SOURCES
 ###########################################################################
 
-function __H(r̄::Coordinate, t::Unitful.Time, source::SurfaceSource_Disk{T},
+function __H(r̄::AbstractCoordinate, t::Unitful.Time, source::SurfaceSource_Disk{T},
     media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
     function disk_integrand(ū,p)
         # Assign aliases to ū values and convert to a Coordinate
@@ -73,7 +80,7 @@ function __H(r̄::Coordinate, t::Unitful.Time, source::SurfaceSource_Disk{T},
     return ( (1/4π) .* (sol.u) .* (A/m) )
 end
 
-function __H(r̄::Coordinate, t::Unitful.Time, source::SurfaceSource_Rectangle{T},
+function __H(r̄::AbstractCoordinate, t::Unitful.Time, source::SurfaceSource_Rectangle{T},
             media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
     function integrand(u,p)
         (x_m, y_m) = u
@@ -97,12 +104,12 @@ end
 #                        VOLUME SOURCES
 ###########################################################################
 
-function __H(r̄::Coordinate, t::Unitful.Time, source::VolumeSource_Cylinder{T},
+function __H(r̄::AbstractCoordinate, t::Unitful.Time, source::VolumeSource_Cylinder{T},
     media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
     error("Solver not yet implemented.")
 end
 
-function __H(r̄::Coordinate, t::Unitful.Time, source::VolumeSource_Rectangular{T},
+function __H(r̄::AbstractCoordinate, t::Unitful.Time, source::VolumeSource_Rectangular{T},
     media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
     function integrand(u,p)
         (x_m, y_m, z_m) = u
@@ -123,7 +130,7 @@ function __H(r̄::Coordinate, t::Unitful.Time, source::VolumeSource_Rectangular{
     return ( (1/4π) .* (sol.u) .* (A/m) )
 end
 
-function __H(r̄::Coordinate, t::Unitful.Time, source::VolumeSource_Sphere{T},
+function __H(r̄::AbstractCoordinate, t::Unitful.Time, source::VolumeSource_Sphere{T},
     media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
     error("Solver not yet implemented.")
 end

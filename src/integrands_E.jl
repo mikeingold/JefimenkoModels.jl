@@ -1,16 +1,16 @@
 """
-    __integrand_E_R1(r̄′::Coordinate; source::AbstractLineSource{T}, media::PropagationMedia
-                    r̄::Coordinate, t::Time)  where {T<:AbstractFloat}
+    __integrand_E_R1(r̄′::AbstractCoordinate; source::AbstractLineSource{T}, media::PropagationMedia
+                    r̄::AbstractCoordinate, t::Time)  where {T<:AbstractFloat}
 
 Calculate the integrand function for the electric Jefimenko equation of a one-dimensional
 `line source` at the `source point r̄′`. Parameterize the integrand function for a particular
 `field source`, `propagation media`, and an observer positioned at space-time point (`r̄`,`t`).
 
 # Arguments
-- `r̄′::Coordinate`: spatial coordinate of the source point
+- `r̄′::AbstractCoordinate`: spatial coordinate of the source point
 
 # Parameters
-- `r̄::UnitfulCoordinateSystems.Coordinate`: spatial coordinate at the observation point
+- `r̄::UnitfulCoordinateSystems.AbstractCoordinate`: spatial coordinate at the observation point
 - `t::Unitful.Time`: time at the observation point
 - `source::JefimenkoSource`: the source model generating the electric field
 - `media::PropagationMedia`: properties of the propagation media
@@ -18,7 +18,7 @@ Calculate the integrand function for the electric Jefimenko equation of a one-di
 # Returns
 - `Vector{Quantity}`: the predicted vector-valued integrand value with appropriate units
 """
-function __integrand_E_R1(r̄′::Coordinate; r̄::Coordinate, t::Unitful.Time,
+function __integrand_E_R1(r̄′::AbstractCoordinate; r̄::AbstractCoordinate, t::Unitful.Time,
                          source::AbstractLineSource{T}, media::PropagationMedia_Simple
                          ) where {T<:AbstractFloat}
     # Get spatial properties, in implicit units of meters
@@ -57,18 +57,18 @@ function __integrand_E_R1(r̄′::Coordinate; r̄::Coordinate, t::Unitful.Time,
 end
 
 """
-    __integrand_E_R2(r̄′::Coordinate; source::AbstractSurfaceSource{T}, media::PropagationMedia
-                    r̄::Coordinate, t::Time) where {T<:AbstractFloat}
+    __integrand_E_R2(r̄′::AbstractCoordinate; source::AbstractSurfaceSource{T}, media::PropagationMedia
+                    r̄::AbstractCoordinate, t::Time) where {T<:AbstractFloat}
 
 Calculate the integrand function for the electric Jefimenko equation of a two-dimensional
 `surface source` at the `source point r̄′`. Parameterize the integrand function for a particular
 `field source`, `propagation media`, and an observer positioned at space-time point (`r̄`,`t`).
 
 # Arguments
-- `r̄′::Coordinate`: spatial coordinate of the source point
+- `r̄′::AbstractCoordinate`: spatial coordinate of the source point
 
 # Parameters
-- `r̄::UnitfulCoordinateSystems.Coordinate`: spatial coordinate at the observation point
+- `r̄::UnitfulCoordinateSystems.AbstractCoordinate`: spatial coordinate at the observation point
 - `t::Unitful.Time`: time at the observation point
 - `source::JefimenkoSource`: the source model generating the electric field
 - `media::PropagationMedia`: properties of the propagation media
@@ -77,7 +77,7 @@ Calculate the integrand function for the electric Jefimenko equation of a two-di
 - `Vector{T}`: the predicted vector-valued integrand value, in implicit units [V/m³]. (The
 `HCubature` solver does not yet support `Unitful` types.)
 """
-function __integrand_E_R2(r̄′::Coordinate; r̄::Coordinate, t::Unitful.Time,
+function __integrand_E_R2(r̄′::AbstractCoordinate; r̄::AbstractCoordinate, t::Unitful.Time,
                          source::AbstractSurfaceSource{T}, media::PropagationMedia_Simple
                          ) where {T<:AbstractFloat}
     # Get spatial properties, in implicit units of meters
@@ -116,18 +116,18 @@ function __integrand_E_R2(r̄′::Coordinate; r̄::Coordinate, t::Unitful.Time,
 end
 
 """
-    __integrand_E_R3(r̄′::Coordinate; source::AbstractVolumeSource{T}, media::PropagationMedia
-                    r̄::Coordinate, t::Time) where {T<:AbstractFloat}
+    __integrand_E_R3(r̄′::AbstractCoordinate; source::AbstractVolumeSource{T}, media::PropagationMedia
+                    r̄::AbstractCoordinate, t::Time) where {T<:AbstractFloat}
 
 Calculate the integrand function for the electric Jefimenko equation of a three-dimensional
 `volume source` at the `source point r̄′`. Parameterize the integrand function for a particular
 `field source`, `propagation media`, and an observer positioned at space-time point (`r̄`,`t`).
 
 # Arguments
-- `r̄′::Coordinate`: spatial coordinate of the source point
+- `r̄′::AbstractCoordinate`: spatial coordinate of the source point
 
 # Parameters
-- `r̄::UnitfulCoordinateSystems.Coordinate`: spatial coordinate at the observation point
+- `r̄::UnitfulCoordinateSystems.AbstractCoordinate`: spatial coordinate at the observation point
 - `t::Unitful.Time`: time at the observation point
 - `source::JefimenkoSource`: the source model generating the electric field
 - `media::PropagationMedia`: properties of the propagation media
@@ -136,7 +136,7 @@ Calculate the integrand function for the electric Jefimenko equation of a three-
 - `Vector{T}`: the predicted vector-valued integrand value, in implicit units [V/m⁴]. (The
 `HCubature` solver does not yet support `Unitful` types.)
 """
-function __integrand_E_R3(r̄′::Coordinate; r̄::Coordinate, t::Unitful.Time,
+function __integrand_E_R3(r̄′::AbstractCoordinate; r̄::AbstractCoordinate, t::Unitful.Time,
                          source::AbstractVolumeSource{T}, media::PropagationMedia_Simple
                          ) where {T<:AbstractFloat}
     # Get spatial properties, in implicit units of meters

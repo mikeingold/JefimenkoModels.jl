@@ -1,16 +1,16 @@
 # TODO
 
+## In Progress
+- Re-test solvers with UnitfulCoordinateSystem update
+
 ## Short Term
-- Rename internal functions with double-underscore
-- Remove unicode from function names
-- Benchmark the solvers
-    - HCubature vs QuadGK for LineSource's
-    - Compare 3D volume source performance with JefiGPU
+- Benchmark a 3D volume source against JefiGPU
 
 ## Medium Term
+- Develop constructor methods for sources and models
+- Evaluate type stability of coordinates in integrand functions
 - Implement E/H(VolumeSource_Cylinder)
 - Implement E/H(VolumeSource_Sphere)
-- Develop constructor methods for sources and models
 
 ## Longer-Term Vision
 - Add a CITATION.bib

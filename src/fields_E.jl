@@ -3,14 +3,14 @@
 ###########################################################################
 
 """
-    __E(r̄::Coordinate, t::Time, source::JefimenkoSource, media::PropagationMedia; rtol)
+    __E(r̄::AbstractCoordinate, t::Time, source::JefimenkoSource, media::PropagationMedia; rtol)
 
 Calculate the electric field at (`r̄`,`t`) using the electric Jefimenko equation due to a
 particular `source`, transmitted through a particular homogeneous `propagation media`.
 Calculate the integral using a specified `relative tolerance`.
 
 # Arguments
-- `r̄::UnitfulCoordinateSystems.Coordinate`: spatial location of the observation point
+- `r̄::UnitfulCoordinateSystems.AbstractCoordinate`: spatial location of the observation point
 - `t::Unitful.Time`: time at which the electric field is observed
 - `source::JefimenkoSource`: source of the electric field
 - `media::PropagationMedia`: properties of the propagation media
@@ -18,34 +18,35 @@ Calculate the integral using a specified `relative tolerance`.
 # Keywords
 - `rtol::Real`: relative tolerance at which to solve the integral (optional)
 """
-function __E(r̄::Coordinate, t::Unitful.Time, source::LineSource_Straight{T},
+function __E(r̄::AbstractCoordinate, t::Unitful.Time, source::LineSource_Straight{T},
             media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
     # Calculate the length of the line source from starting point ā to ending point b̄
     dmax::Unitful.Length = norm(source.b̄ - source.ā)
 
-    function integrand(u,p)
+    # Calculate the integrand E-field vector in implied units [V/m²]
+    function integrand_Vm2(u::Real, p)::Vector{T}
         d::Unitful.Length = u[1] * m
+        
         # Parameterize a straight line from ā to b̄ according to the distance traveled
-        # Get a unit vector pointing from ā -> b̄
-        û = (source.b̄ - source.ā) ./ dmax
-
-        #= TODO Replace the following hack
-        #       Can't add a Coordinate to an SVector
-        #       Implement SVector(Coordinate) and Coordinate(SVector)
-        #       Implement +(::CoordinateCartesian, ::SVector{T,3}) where T<:Real
         # Start at ā, progress the specified distance in direction û
-        source.ā + ( d .* û )
-        =#
-        trek = d .* û
-        r̄′ = CoordinateCartesian(trek[1], trek[2], trek[3])
+        û = (source.b̄ - source.ā) ./ dmax
+        r̄′ = source.ā + (d .* û)
 
-        val = __integrand_E_R1(r̄′; source=source, media=media, r̄=r̄, t=t)
-        return ustrip.(T, V/m^2, val)
+        # trek = d .* û
+        # r̄′ = CoordinateCartesian(trek[1], trek[2], trek[3])
+
+        intE = __integrand_E_R1(r̄′; source=source, media=media, r̄=r̄, t=t)
+        return ustrip.(T, V/m^2, intE)
     end
 
+    #= TESTING QuadGK vs HCubatureJL
     # Define the integrand as a f(d) traveled along line source, solve it
     prob = IntegralProblem(integrand, zeros(T,1), [ustrip(T,m,dmax)])
     sol = solve(prob, HCubatureJL(), reltol=rtol)
+    return ( (1/4π) .* (sol.u) .* (V/m) )             # in [V/m² * m] -> [V/m]
+    =#
+    prob = IntegralProblem(integrand_Vm2, zero(T), ustrip(T,m,dmax))
+    sol = solve(prob, QuadGKJL(), reltol=rtol)
     return ( (1/4π) .* (sol.u) .* (V/m) )             # in [V/m² * m] -> [V/m]
 end
 
@@ -53,7 +54,7 @@ end
 #                        SURFACE SOURCES
 ###########################################################################
 
-function __E(r̄::Coordinate, t::Unitful.Time, source::SurfaceSource_Disk{T},
+function __E(r̄::AbstractCoordinate, t::Unitful.Time, source::SurfaceSource_Disk{T},
             media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
     function disk_integrand(ū,p)
         # Assign aliases to ū values and convert to a Coordinate
@@ -76,7 +77,7 @@ function __E(r̄::Coordinate, t::Unitful.Time, source::SurfaceSource_Disk{T},
     return ( (1/4π) .* (sol.u) .* (V/m) )
 end
 
-function __E(r̄::Coordinate, t::Unitful.Time, source::SurfaceSource_Rectangle{T},
+function __E(r̄::AbstractCoordinate, t::Unitful.Time, source::SurfaceSource_Rectangle{T},
             media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
     function integrand(u,p)
         (x_m, y_m) = u
@@ -100,12 +101,12 @@ end
 #                        VOLUME SOURCES
 ###########################################################################
 
-function __E(r̄::Coordinate, t::Unitful.Time, source::VolumeSource_Cylinder{T},
+function __E(r̄::AbstractCoordinate, t::Unitful.Time, source::VolumeSource_Cylinder{T},
     media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
     error("Solver not yet implemented.")
 end
 
-function __E(r̄::Coordinate, t::Unitful.Time, source::VolumeSource_Rectangular{T},
+function __E(r̄::AbstractCoordinate, t::Unitful.Time, source::VolumeSource_Rectangular{T},
     media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
     function integrand(u,p)
         (x_m, y_m, z_m) = u
@@ -126,7 +127,7 @@ function __E(r̄::Coordinate, t::Unitful.Time, source::VolumeSource_Rectangular{
     return ( (1/4π) .* (sol.u) .* (V/m) )
 end
 
-function __E(r̄::Coordinate, t::Unitful.Time, source::VolumeSource_Sphere{T},
+function __E(r̄::AbstractCoordinate, t::Unitful.Time, source::VolumeSource_Sphere{T},
     media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
     error("Solver not yet implemented.")
 end

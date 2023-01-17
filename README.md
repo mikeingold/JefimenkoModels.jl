@@ -6,7 +6,7 @@ This solver implements a generalized variant of the Jefimenko equations that all
 
 ## Status
 
-This package remains in development status. Not all planned solver methods are yet implemented, and results have not yet been validated.
+This package remains in development status. Not all planned solver methods are yet implemented or validated.
 
 | Public Function | Implemented | Tested | Validated |
 |:---|:---:|:---:|:---:|

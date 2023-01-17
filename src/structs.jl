@@ -75,8 +75,8 @@ abstract type AbstractJefimenkoSource{T} end
     abstract type AbstractLineSource{T} <: AbstractJefimenkoSource{T} end
 
         struct LineSource_Straight{T} <: AbstractLineSource{T}
-            ā::CoordinateCartesian
-            b̄::CoordinateCartesian
+            ā::AbstractCoordinate
+            b̄::AbstractCoordinate
             ρₑ::Function
             ρₕ::Function
             Jₑ::Function
