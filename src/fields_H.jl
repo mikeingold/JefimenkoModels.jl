@@ -24,22 +24,13 @@ function __H(r̄::AbstractCoordinate, t::Unitful.Time, source::LineSource_Straig
     dmax::Unitful.Length = norm(source.b̄ - source.ā)
 
     # Calculate the integrand H-field vector in implied units [A/m²]
-    function integrand(u::Real, p)::Vector{T}
-        d::Unitful.Length = u
-
+    function integrand_Am2(u::Real, p)::Vector{T}
+        d::Unitful.Length = u * m
+        
         # Parameterize a straight line from ā to b̄ according to the distance traveled
-        # Get a unit vector pointing from ā -> b̄
-        û = (source.b̄ - source.ā) ./ dmax
-
-        #= TODO Replace the following hack
-        #       Can't add a Coordinate to an SVector
-        #       Implement SVector(Coordinate) and Coordinate(SVector)
-        #       Implement +(::CoordinateCartesian, ::SVector{T,3}) where T<:Real
         # Start at ā, progress the specified distance in direction û
-        source.ā + ( d .* û )
-        =#
-        trek = d .* û
-        r̄′ = CoordinateCartesian(trek[1], trek[2], trek[3])
+        û = (source.b̄ - source.ā) ./ dmax
+        r̄′::CoordinateCartesian = source.ā + (d .* û)
 
         intH = __integrand_H_R1(r̄′; source=source, media=media, r̄=r̄, t=t)
         return ustrip.(T, A/m^2, intH)
@@ -51,7 +42,7 @@ function __H(r̄::AbstractCoordinate, t::Unitful.Time, source::LineSource_Straig
     sol = solve(prob, HCubatureJL(), reltol=rtol)     # in implied units [A/m² * m] -> [A/m]
     return ( (1/4π) .* (sol.u) .* (A/m) )
     =#
-    prob = IntegralProblem(integrand, zero(T), ustrip(T,m,dmax))
+    prob = IntegralProblem(integrand_Am2, zero(T), ustrip(T,m,dmax))
     sol = solve(prob, QuadGKJL(), reltol=rtol)     # in units [A/m² * m] -> [A/m]
     return ( (1/4π) .* (sol.u) .* (A/m) )
 end

@@ -25,15 +25,12 @@ function __E(r̄::AbstractCoordinate, t::Unitful.Time, source::LineSource_Straig
 
     # Calculate the integrand E-field vector in implied units [V/m²]
     function integrand_Vm2(u::Real, p)::Vector{T}
-        d::Unitful.Length = u[1] * m
+        d::Unitful.Length = u * m
         
         # Parameterize a straight line from ā to b̄ according to the distance traveled
         # Start at ā, progress the specified distance in direction û
         û = (source.b̄ - source.ā) ./ dmax
-        r̄′ = source.ā + (d .* û)
-
-        # trek = d .* û
-        # r̄′ = CoordinateCartesian(trek[1], trek[2], trek[3])
+        r̄′::CoordinateCartesian = source.ā + (d .* û)
 
         intE = __integrand_E_R1(r̄′; source=source, media=media, r̄=r̄, t=t)
         return ustrip.(T, V/m^2, intE)
