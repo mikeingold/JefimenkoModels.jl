@@ -1,34 +1,30 @@
 # JefimenkoModels.jl
 
-`JefimenkoModels.jl` is a time-domain solver for the electromagnetic near-fields produced by some distribution of source charges and currents.
+`JefimenkoModels.jl` is a time-domain solver for the electromagnetic near-fields produced by
+some distribution of source charges and currents.
 
-This solver implements a generalized variant of the Jefimenko equations that allows for the consideration of magnetic charges and currents, which are often a useful analytical tool in electromagnetics modeling.
+This solver implements a generalized variant of the Jefimenko equations that allows for the
+consideration of magnetic charges and currents, which are often a useful analytical tool in
+electromagnetics modeling.
 
 ## Status
 
-This package remains in development status. Not all planned solver methods are yet implemented or validated.
+This package remains in development status. Multiple dispatch is used to select the solver
+method appropriate for a particular source type. The implementation status of these methods
+is detailed in the following table.
 
-| Public Function | Implemented | Tested | Validated |
+| Solver Method | Implemented | Tested | Validated |
 |:---|:---:|:---:|:---:|
-| `E(LineSource_Straight)`       | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| `E(SurfaceSource_Disk)`        | :white_check_mark: | :white_check_mark: | :x: |
-| `E(SurfaceSource_Rectangle)`   | :white_check_mark: | :x: | :x: |
-| `E(VolumeSource_Rectangular)`  | :white_check_mark: | :x: | :x: |
-| `E(VolumeSource_Cylinder)`     | :x: | :x: | :x: |
-| `E(VolumeSource_Sphere)`       | :x: | :x: | :x: |
-| `H(LineSource_Straight)`       | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| `H(SurfaceSource_Disk)`        | :white_check_mark: | :white_check_mark: | :x: |
-| `H(SurfaceSource_Rectangle)`   | :white_check_mark: | :x: | :x: |
-| `H(VolumeSource_Rectangular)`  | :white_check_mark: | :x: | :x: |
-| `H(VolumeSource_Cylinder)`     | :x: | :x: | :x: |
-| `H(VolumeSource_Sphere)`       | :x: | :x: | :x: |
+| `LineSource_Straight`       | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| `SurfaceSource_Disk`        | :white_check_mark: | :white_check_mark: | :x: |
+| `SurfaceSource_Rectangle`   | :white_check_mark: | :x: | :x: |
+| `VolumeSource_Rectangular`  | :white_check_mark: | :x: | :x: |
+| `VolumeSource_Cylinder`     | :x: | :x: | :x: |
+| `VolumeSource_Sphere`       | :x: | :x: | :x: |
 
 ## Usage (TODO)
 
+- How to define a media
+- How to define a source signal
 - How to construct a model
-    - `LineSource_Straight`
-    - `SurfaceSource_Disk`
 - How to calculate the fields
-    - `E(r,t,model)`
-    - `H(r,t,model)`
-    - `P(r,t,model)`
