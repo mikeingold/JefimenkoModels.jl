@@ -75,19 +75,19 @@ hopefully simplify the source design process and identify potential dimensional 
 
 | Function | Arg 1 | Arg 2 [Units] | Return Type [Units] |
 |---|---|---|---|
-| Electric charge density $\rho_e(\bar{r},t)$ | `r::AbstractCoordinate` | `t::Real` [s] | `rho_e::Real` [C/m] |
-| Magnetic charge density $\rho_h(\bar{r},t)$ | `r::AbstractCoordinate` | `t::Real` [s] | `rho_h::Real` [Wb/m] |
-| Electric current density $J_e(\bar{r},t)$   | `r::AbstractCoordinate` | `t::Real` [s] | `J_e::SVector{3,Real}` [A] |
-| Magnetic current density $J_h(\bar{r},t)$   | `r::AbstractCoordinate` | `t::Real` [s] | `J_h::SVector{3,Real}` [V] |
+| Electric charge density $\rho_e(\bar{r},t)$ | `r::AbstractCoordinate` | `t::Real` [s] | `::Real` [C/m] |
+| Magnetic charge density $\rho_h(\bar{r},t)$ | `r::AbstractCoordinate` | `t::Real` [s] | `::Real` [Wb/m] |
+| Electric current density $J_e(\bar{r},t)$   | `r::AbstractCoordinate` | `t::Real` [s] | `::SVector{3,Real}` [A] |
+| Magnetic current density $J_h(\bar{r},t)$   | `r::AbstractCoordinate` | `t::Real` [s] | `::SVector{3,Real}` [V] |
 
 **Table: Surface Source Functions**
 
 | Function | Arg 1 | Arg 2 [Units] | Return Type [Units] |
 |---|---|---|---|
-| Electric charge density $\rho_e(\bar{r},t)$ | `r::AbstractCoordinate` | `t::Real` [s] | `rho_e::Real` [C/m$^2$] |
-| Magnetic charge density $\rho_h(\bar{r},t)$ | `r::AbstractCoordinate` | `t::Real` [s] | `rho_h::Real` [Wb/m$^2$] |
-| Electric current density $J_e(\bar{r},t)$   | `r::AbstractCoordinate` | `t::Real` [s] | `J_e::SVector{3,Real}` [A/m] |
-| Magnetic current density $J_h(\bar{r},t)$   | `r::AbstractCoordinate` | `t::Real` [s] | `J_h::SVector{3,Real}` [V/m] |
+| Electric charge density $\rho_e(\bar{r},t)$ | `r::AbstractCoordinate` | `t::Real` [s] | `::Real` [C/m$^2$] |
+| Magnetic charge density $\rho_h(\bar{r},t)$ | `r::AbstractCoordinate` | `t::Real` [s] | `::Real` [Wb/m$^2$] |
+| Electric current density $J_e(\bar{r},t)$   | `r::AbstractCoordinate` | `t::Real` [s] | `::SVector{3,Real}` [A/m] |
+| Magnetic current density $J_h(\bar{r},t)$   | `r::AbstractCoordinate` | `t::Real` [s] | `::SVector{3,Real}` [V/m] |
 
 **Table: Volume Source Functions**
 
