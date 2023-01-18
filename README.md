@@ -22,6 +22,14 @@ is detailed in the following table.
 | `VolumeSource_Cylinder`     | :x: | :x: | :x: |
 | `VolumeSource_Sphere`       | :x: | :x: | :x: |
 
+The `LineSource_Straight` solver methods have been validated against a major commercial
+software package's Method of Moments (MoM) solver for electric current line sources. For a
+single-frequency (CW) source signal, `JefimenkoModels` produced identical results as the
+competitor MoM solver. However, when the source signal was defined as a wideband transient
+pulse, the `JefimenkoModels` solver was substantially faster and more accurate: the MoM
+solver uses a discrete-frequency-domain transfer function that introduces artifacts/error
+when solving for wideband signals.
+
 ## Usage (TODO)
 
 - How to define a media

@@ -1,7 +1,7 @@
 # TODO
 
 ## In Progress
-- Re-test solvers with UnitfulCoordinateSystem update
+-
 
 ## Short Term
 - Benchmark a 3D volume source against JefiGPU
@@ -9,11 +9,18 @@
 ## Medium Term
 - Develop constructor methods for sources and models
 - Evaluate type stability of coordinates in integrand functions
-- Implement E/H(VolumeSource_Cylinder)
-- Implement E/H(VolumeSource_Sphere)
+- Consider adding default to argument media=CLASSICAL_VACUUM
+- Find a way to validate SurfaceSource/VolumeSource solvers
+- Implement solvers for
+    - VolumeSource_Cylinder
+    - VolumeSource_Sphere
 
 ## Longer-Term Vision
 - Add a CITATION.bib
+- Re-assess the need for solver type parameterization
+    - Does it even work as intended?
+    - Is there a performance benefit?
+    - Should __DEFAULT_RTOL be defined as a function __DEFAULT_RTOL(T)?
 - Evaluate whether Automatic Differentiation can be made to operate through solutions
 - Consider permitting sources to have a variable center/orientation
 - Consider consolidating the integrand functions using ComponentArray-parameterized source values
