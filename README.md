@@ -75,28 +75,28 @@ hopefully simplify the source design process and identify potential dimensional 
 
 | Function | Arg 1 | Arg 2 [Units] | Return Type [Units] |
 |---|---|---|---|
-| Electric charge density $\rho_e(\bar{r},t)$ | `r::AbstractCoordinate` | `t::Real` [s] | `::Real` [C/m] |
-| Magnetic charge density $\rho_h(\bar{r},t)$ | `r::AbstractCoordinate` | `t::Real` [s] | `::Real` [Wb/m] |
-| Electric current density $J_e(\bar{r},t)$   | `r::AbstractCoordinate` | `t::Real` [s] | `::SVector{3,Real}` [A] |
-| Magnetic current density $J_h(\bar{r},t)$   | `r::AbstractCoordinate` | `t::Real` [s] | `::SVector{3,Real}` [V] |
+| Electric charge density $\rho_e(\bar{r},t)$     | `r::AbstractCoordinate` | `t::Real` [s] | `::Real` [C/m] |
+| Magnetic charge density $\rho_h(\bar{r},t)$     | `r::AbstractCoordinate` | `t::Real` [s] | `::Real` [Wb/m] |
+| Electric current density $\bar{J_e}(\bar{r},t)$ | `r::AbstractCoordinate` | `t::Real` [s] | `::SVector{3,Real}` [A] |
+| Magnetic current density $\bar{J_h}(\bar{r},t)$ | `r::AbstractCoordinate` | `t::Real` [s] | `::SVector{3,Real}` [V] |
 
 **Table: Surface Source Functions**
 
 | Function | Arg 1 | Arg 2 [Units] | Return Type [Units] |
 |---|---|---|---|
-| Electric charge density $\rho_e(\bar{r},t)$ | `r::AbstractCoordinate` | `t::Real` [s] | `::Real` [C/m$^2$] |
-| Magnetic charge density $\rho_h(\bar{r},t)$ | `r::AbstractCoordinate` | `t::Real` [s] | `::Real` [Wb/m$^2$] |
-| Electric current density $J_e(\bar{r},t)$   | `r::AbstractCoordinate` | `t::Real` [s] | `::SVector{3,Real}` [A/m] |
-| Magnetic current density $J_h(\bar{r},t)$   | `r::AbstractCoordinate` | `t::Real` [s] | `::SVector{3,Real}` [V/m] |
+| Electric charge density $\rho_e(\bar{r},t)$     | `r::AbstractCoordinate` | `t::Real` [s] | `::Real` [C/m$^2$] |
+| Magnetic charge density $\rho_h(\bar{r},t)$     | `r::AbstractCoordinate` | `t::Real` [s] | `::Real` [Wb/m$^2$] |
+| Electric current density $\bar{J_e}(\bar{r},t)$ | `r::AbstractCoordinate` | `t::Real` [s] | `::SVector{3,Real}` [A/m] |
+| Magnetic current density $\bar{J_h}(\bar{r},t)$ | `r::AbstractCoordinate` | `t::Real` [s] | `::SVector{3,Real}` [V/m] |
 
 **Table: Volume Source Functions**
 
 | Function | Arg 1 | Arg 2 [Units] | Return Type [Units] |
 |---|---|---|---|
-| Electric charge density $\rho_e(\bar{r},t)$ | `r::AbstractCoordinate` | `t::Real` [s] | `::Real` [C/m$^3$] |
-| Magnetic charge density $\rho_h(\bar{r},t)$ | `r::AbstractCoordinate` | `t::Real` [s] | `::Real` [Wb/m$^3$] |
-| Electric current density $J_e(\bar{r},t)$   | `r::AbstractCoordinate` | `t::Real` [s] | `::SVector{3,Real}` [A$^2$] |
-| Magnetic current density $J_h(\bar{r},t)$   | `r::AbstractCoordinate` | `t::Real` [s] | `::SVector{3,Real}` [V$^2$] |
+| Electric charge density $\rho_e(\bar{r},t)$     | `r::AbstractCoordinate` | `t::Real` [s] | `::Real` [C/m$^3$] |
+| Magnetic charge density $\rho_h(\bar{r},t)$     | `r::AbstractCoordinate` | `t::Real` [s] | `::Real` [Wb/m$^3$] |
+| Electric current density $\bar{J_e}(\bar{r},t)$ | `r::AbstractCoordinate` | `t::Real` [s] | `::SVector{3,Real}` [A$^2$] |
+| Magnetic current density $\bar{J_h}(\bar{r},t)$ | `r::AbstractCoordinate` | `t::Real` [s] | `::SVector{3,Real}` [V$^2$] |
 
 ### Construct a model
 
@@ -107,7 +107,7 @@ metadata.
 The following example produces a `JefimenkoModel` with a single one-meter line source on
 the x-axis. This source is stimulated by a spatially-uniform electric current.
 ```julia
-model_cw = let
+model = let
     # Single line source on x-axis from -0.5m to +0.5m
     # Electric current only: spatially-uniform, x-directed, driven by 100 MHz CW sinusoid
     a = CoordinateCartesian(-0.5u"m", 0.0u"m", 0.0u"m")
