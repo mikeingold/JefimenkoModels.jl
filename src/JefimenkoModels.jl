@@ -9,7 +9,7 @@ module JefimenkoModels
     __DEFAULT_RTOL = sqrt(eps())
 
     ###########################################################################
-    #                            DATA STRUCTURES
+    #                     DATA STRUCTURES & COMMON DEFAULTS
     ###########################################################################
 
     # Data structures
@@ -21,8 +21,11 @@ module JefimenkoModels
         c₀ = uconvert(m/s, float(c_0))
         PropagationMedia_Simple(ε₀, μ₀, c₀)
     end
+
+    NULL_CHARGE(r̄::AbstractCoordinate, t_s::Real) = 0
+    NULL_CURRENT(r̄::AbstractCoordinate, t_s::Real) = StaticArrays.SVector(0, 0, 0)
     
-    export CLASSICAL_VACUUM
+    export CLASSICAL_VACUUM, NULL_CHARGE, NULL_CURRENT
 
     ###########################################################################
     #                     RETARDED-TIME CALCULATIONS
