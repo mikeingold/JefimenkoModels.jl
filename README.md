@@ -30,9 +30,32 @@ pulse, the `JefimenkoModels` solver was substantially faster and more accurate: 
 solver uses a discrete-frequency-domain transfer function that introduces artifacts/error
 when solving for wideband signals.
 
-## Usage (TODO)
+## Usage
 
-- How to define a media
-- How to define a source signal
-- How to construct a model
-- How to calculate the fields
+### Define a propagation media
+
+The propagation media of a model is assumed to be linear, time-invariant, and
+spatially-homogeneous.
+
+When designing a model that will propagate in vacuum (free space), a pre-defined media is
+provided.
+```julia
+media::PropagationMedia_Simple = JefimenkoModels.CLASSICAL_VACUUM
+```
+
+Alternatively, a propagation media with Real-valued permittivity ($\varepsilon$) and
+permeability ($\mu$) can be specified using `Unitful` values. Each term can be defined in
+your preferred choice of units, so long as they are dimensionally-equivalent to the reference
+units: $\varepsilon$ in [F/m] or [As/Vm], and $\mu$ in [N/A$^2$] or [Vs/Am].
+```julia
+epsilon = 8.854_188e-15 * (u"kA"*u"s")/(u"V"*u"m")
+mu = 1.256_637e-3  * (u"mV"*u"s")/(u"A"*u"m")
+c = 2.997_925e5 * u"km"/u"s"
+PropagationMedia_Simple(epsilon, mu, c)
+```
+
+### Define a source (TODO)
+
+### Construct a model (TODO)
+
+### Calculate the electromagnetic fields (TODO)
