@@ -71,7 +71,7 @@ number with implied units according to the following tables.
 An update is planned that will require a `Unitful` time argument and return types. This will
 hopefully simplify the source design process and identify potential dimensional errors.
 
-#### Line Sources
+**Table: Line Source Functions**
 
 | Name | Function | Argument 1 | Argument 2 [Implied Units] | Returns [Implied Units] |
 |---|---|---|---|---|
@@ -80,7 +80,7 @@ hopefully simplify the source design process and identify potential dimensional 
 | Electric current density | `J_e` | `r::AbstractCoordinate` | `t::Real` [s] | `J_e::SVector{3,Real}` [A] |
 | Magnetic current density | `J_h` | `r::AbstractCoordinate` | `t::Real` [s] | `J_h::SVector{3,Real}` [V] |
 
-#### Surface Sources
+**Table: Surface Source Functions**
 
 | Name | Function | Argument 1 | Argument 2 [Implied Units] | Returns [Implied Units] |
 |---|---|---|---|---|
@@ -89,7 +89,7 @@ hopefully simplify the source design process and identify potential dimensional 
 | Electric current density | `J_e` | `r::AbstractCoordinate` | `t::Real` [s] | `J_e::SVector{3,Real}` [A/m] |
 | Magnetic current density | `J_h` | `r::AbstractCoordinate` | `t::Real` [s] | `J_h::SVector{3,Real}` [V/m] |
 
-#### Volume Sources
+**Table: Volume Source Functions**
 
 | Name | Function | Argument 1 | Argument 2 [Implied Units] | Returns [Implied Units] |
 |---|---|---|---|---|
