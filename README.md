@@ -14,7 +14,7 @@ method appropriate for a particular source type. The implementation status of th
 is detailed in the following table.
 
 | Solver Method | Implemented | Tested |
-|:---|:---:|:---:|:---:|
+|:---|:---:|:---:|
 | `LineSource_Straight`       | :white_check_mark: | :white_check_mark: |
 | `SurfaceSource_Disk`        | :white_check_mark: | :white_check_mark: |
 | `SurfaceSource_Rectangle`   | :white_check_mark: |         :x:        |
