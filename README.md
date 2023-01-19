@@ -13,14 +13,14 @@ This package remains in development status. Multiple dispatch is used to select 
 method appropriate for a particular source type. The implementation status of these methods
 is detailed in the following table.
 
-| Solver Method | Implemented | Tested | Validated |
+| Solver Method | Implemented | Tested |
 |:---|:---:|:---:|:---:|
-| `LineSource_Straight`       | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| `SurfaceSource_Disk`        | :white_check_mark: | :white_check_mark: | :x: |
-| `SurfaceSource_Rectangle`   | :white_check_mark: | :x: | :x: |
-| `VolumeSource_Rectangular`  | :white_check_mark: | :x: | :x: |
-| `VolumeSource_Cylinder`     | :x: | :x: | :x: |
-| `VolumeSource_Sphere`       | :x: | :x: | :x: |
+| `LineSource_Straight`       | :white_check_mark: | :white_check_mark: |
+| `SurfaceSource_Disk`        | :white_check_mark: | :white_check_mark: |
+| `SurfaceSource_Rectangle`   | :white_check_mark: |         :x:        |
+| `VolumeSource_Rectangular`  | :white_check_mark: |         :x:        |
+| `VolumeSource_Cylinder`     |         :x:        |         :x:        |
+| `VolumeSource_Sphere`       |         :x:        |         :x:        |
 
 The `LineSource_Straight` solver methods have been validated against a major commercial
 software package's Method of Moments (MoM) solver for electric current line sources. For a
