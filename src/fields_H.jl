@@ -54,7 +54,7 @@ function __H(r̄::AbstractCoordinate, t::Unitful.Time, source::SurfaceSource_Dis
         r̄′ = CoordinatePolar(ρ_m*m, ϕ_rad*rad)
         # Return integrand scaled by the radial integration factor,
         #   in implied units [A/m³ * m] -> [A/m²]
-        return __integrand_E_R2(r̄′; r̄=r̄, t=t, source=source, media=media) * ρ_m
+        return __integrand_H_R2(r̄′; r̄=r̄, t=t, source=source, media=media) * ρ_m
     end
 
     # Define and solve the integral problem over a circular aperture
