@@ -4,12 +4,13 @@
 -
 
 ## Short Term
+- Figure out how to get E.(r,t,model) broadcasting working
+- Either remove Unicode from struct field naming OR provide non-Unicode accessors
 - Benchmark a 3D volume source against JefiGPU
 
 ## Medium Term
-- Develop constructor methods for sources and models
+- Develop/document constructor methods for sources and models
 - Evaluate type stability of coordinates in integrand functions
-- Consider adding default to argument media=CLASSICAL_VACUUM
 - Implement solvers for
     - VolumeSource_Cylinder
     - VolumeSource_Sphere

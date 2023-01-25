@@ -8,6 +8,10 @@ modeling. The solution process operates purely in the time-domain, enabling the 
 wideband sources without artifacts caused by frequency-domain analysis and with reduced
 memory usage compared to FDTD methods.
 
+This package leverages the
+[UnitfulCoordinateSystems.jl](https://gitlab.com/mike.ingold/unitfulcoordinatesystems.jl)
+package to provide a handy and performant way to deal with `Unitful` coordinate data.
+
 ## Status
 
 This package remains in development status. Multiple dispatch is used to select the solver
