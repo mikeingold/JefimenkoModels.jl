@@ -36,12 +36,7 @@ function __E(r̄::AbstractCoordinate, t::Unitful.Time, source::LineSource_Straig
         return ustrip.(T, V/m^2, intE)
     end
 
-    #= TESTING QuadGK vs HCubatureJL
     # Define the integrand as a f(d) traveled along line source, solve it
-    prob = IntegralProblem(integrand, zeros(T,1), [ustrip(T,m,dmax)])
-    sol = solve(prob, HCubatureJL(), reltol=rtol)
-    return ( (1/4π) .* (sol.u) .* (V/m) )             # in [V/m² * m] -> [V/m]
-    =#
     prob = IntegralProblem(integrand_Vm2, zero(T), ustrip(T,m,dmax))
     sol = solve(prob, QuadGKJL(), reltol=rtol)
     return ( (1/4π) .* (sol.u) .* (V/m) )             # in [V/m² * m] -> [V/m]
@@ -68,15 +63,14 @@ function __E(r̄::AbstractCoordinate, t::Unitful.Time, source::SurfaceSource_Dis
     ub = [ρ₀_m, T(2π)]
 
     # Define and solve the integral problem over a circular aperture,
-    #   in implied units [V/m² * m] -> [V/m]
     prob = IntegralProblem(disk_integrand, lb, ub)
-    sol = solve(prob, HCubatureJL(), reltol=rtol)
+    sol = solve(prob, HCubatureJL(), reltol=rtol)      # implied units [V/m² * m] -> [V/m]
     return ( (1/4π) .* (sol.u) .* (V/m) )
 end
 
 function __E(r̄::AbstractCoordinate, t::Unitful.Time, source::SurfaceSource_Rectangle{T},
             media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
-    function integrand(u,p)
+    function integrand_Vm3(u,p)
         (x_m, y_m) = u
         r̄′ = CoordinateCartesian(x_m*m, y_m*m, 0.0m)
         return __integrand_E_R2(r̄′; r̄=r̄, t=t, source=source, media=media)  # implied [V/m³]
@@ -89,8 +83,8 @@ function __E(r̄::AbstractCoordinate, t::Unitful.Time, source::SurfaceSource_Rec
     ub = [lim_max_x_m, lim_max_y_m]
 
     # Define and solve the integral problem over rectangular aperture
-    prob = IntegralProblem(integrand, lb, ub)
-    sol = solve(prob, HCubatureJL(), reltol=rtol)     # implied [V/m³ * m²] -> [V/m]
+    prob = IntegralProblem(integrand_Vm3, lb, ub)
+    sol = solve(prob, HCubatureJL(), reltol=rtol)     # implied units [V/m³ * m²] -> [V/m]
     return ( (1/4π) .* (sol.u) .* (V/m) )
 end
 
@@ -105,9 +99,9 @@ end
 
 function __E(r̄::AbstractCoordinate, t::Unitful.Time, source::VolumeSource_Rectangular{T},
     media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
-    function integrand(u,p)
+    function integrand_Vm4(u,p)
         (x_m, y_m, z_m) = u
-        r̄′ = CoordinateCartesian(x_m*m, y_m*m, z_m)
+        r̄′ = CoordinateCartesian(x_m*m, y_m*m, z_m*m)
         return __integrand_E_R3(r̄′; r̄=r̄, t=t, source=source, media=media)  # implied [V/m⁴]
     end
 
@@ -119,8 +113,8 @@ function __E(r̄::AbstractCoordinate, t::Unitful.Time, source::VolumeSource_Rect
     ub = [lim_max_x_m, lim_max_y_m, lim_max_z_m]
 
     # Define and solve the integral problem over rectangular aperture
-    prob = IntegralProblem(integrand, lb, ub)
-    sol = solve(prob, HCubatureJL(), reltol=rtol)     # implied [V/m⁴ * m³] -> [V/m]
+    prob = IntegralProblem(integrand_Vm4, lb, ub)
+    sol = solve(prob, HCubatureJL(), reltol=rtol)     # implied units [V/m⁴ * m³] -> [V/m]
     return ( (1/4π) .* (sol.u) .* (V/m) )
 end
 

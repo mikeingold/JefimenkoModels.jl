@@ -36,14 +36,9 @@ function __H(r̄::AbstractCoordinate, t::Unitful.Time, source::LineSource_Straig
         return ustrip.(T, A/m^2, intH)
     end
 
-    #= TESTING QuadGK vs HCubatureJL
     # Define the integrand as a f(d) traveled along line source, solve it
-    prob = IntegralProblem(integrand, zeros(T,1), [ustrip(T,m,dmax)])
-    sol = solve(prob, HCubatureJL(), reltol=rtol)     # in implied units [A/m² * m] -> [A/m]
-    return ( (1/4π) .* (sol.u) .* (A/m) )
-    =#
     prob = IntegralProblem(integrand_Am2, zero(T), ustrip(T,m,dmax))
-    sol = solve(prob, QuadGKJL(), reltol=rtol)     # in units [A/m² * m] -> [A/m]
+    sol = solve(prob, QuadGKJL(), reltol=rtol)     # implied units [A/m² * m] -> [A/m]
     return ( (1/4π) .* (sol.u) .* (A/m) )
 end
 
@@ -53,7 +48,7 @@ end
 
 function __H(r̄::AbstractCoordinate, t::Unitful.Time, source::SurfaceSource_Disk{T},
     media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
-    function disk_integrand(ū,p)
+    function disk_integrand_Am2(ū,p)
         # Assign aliases to ū values and convert to a Coordinate
         (ρ_m, ϕ_rad) = ū
         r̄′ = CoordinatePolar(ρ_m*m, ϕ_rad*rad)
@@ -66,14 +61,14 @@ function __H(r̄::AbstractCoordinate, t::Unitful.Time, source::SurfaceSource_Dis
     ρ₀_m = ustrip(T, m, source.ρ₀)
     lb = [zero(T), zero(T)]
     ub = [ρ₀_m, T(2π)]
-    prob = IntegralProblem(disk_integrand, lb, ub)
-    sol = solve(prob, HCubatureJL(), reltol=rtol)     # in implied units [A/m² * m] -> [A/m]
+    prob = IntegralProblem(disk_integrand_Am2, lb, ub)
+    sol = solve(prob, HCubatureJL(), reltol=rtol)       # implied units [A/m² * m] -> [A/m]
     return ( (1/4π) .* (sol.u) .* (A/m) )
 end
 
 function __H(r̄::AbstractCoordinate, t::Unitful.Time, source::SurfaceSource_Rectangle{T},
             media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
-    function integrand(u,p)
+    function integrand_Am3(u,p)
         (x_m, y_m) = u
         r̄′ = CoordinateCartesian(x_m*m, y_m*m, 0.0m)
         return __integrand_H_R2(r̄′; r̄=r̄, t=t, source=source, media=media)  # implied [A/m³]
@@ -86,8 +81,8 @@ function __H(r̄::AbstractCoordinate, t::Unitful.Time, source::SurfaceSource_Rec
     ub = [lim_max_x_m, lim_max_y_m]
 
     # Define and solve the integral problem over rectangular aperture
-    prob = IntegralProblem(integrand, lb, ub)
-    sol = solve(prob, HCubatureJL(), reltol=rtol)     # implied [A/m³ * m²] -> [A/m]
+    prob = IntegralProblem(integrand_Am3, lb, ub)
+    sol = solve(prob, HCubatureJL(), reltol=rtol)     # implied units [A/m³ * m²] -> [A/m]
     return ( (1/4π) .* (sol.u) .* (A/m) )
 end
 
@@ -102,9 +97,9 @@ end
 
 function __H(r̄::AbstractCoordinate, t::Unitful.Time, source::VolumeSource_Rectangular{T},
     media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
-    function integrand(u,p)
+    function integrand_Am4(u,p)
         (x_m, y_m, z_m) = u
-        r̄′ = CoordinateCartesian(x_m*m, y_m*m, z_m)
+        r̄′ = CoordinateCartesian(x_m*m, y_m*m, z_m*m)
         return __integrand_H_R3(r̄′; r̄=r̄, t=t, source=source, media=media)  # implied [A/m⁴]
     end
 
@@ -116,8 +111,8 @@ function __H(r̄::AbstractCoordinate, t::Unitful.Time, source::VolumeSource_Rect
     ub = [lim_max_x_m, lim_max_y_m, lim_max_z_m]
 
     # Define and solve the integral problem over rectangular aperture
-    prob = IntegralProblem(integrand, lb, ub)
-    sol = solve(prob, HCubatureJL(), reltol=rtol)     # implied [A/m⁴ * m³] -> [A/m]
+    prob = IntegralProblem(integrand_Am4, lb, ub)
+    sol = solve(prob, HCubatureJL(), reltol=rtol)     # implied units [A/m⁴ * m³] -> [A/m]
     return ( (1/4π) .* (sol.u) .* (A/m) )
 end
 

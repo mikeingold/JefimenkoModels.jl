@@ -10,7 +10,6 @@
 - Develop constructor methods for sources and models
 - Evaluate type stability of coordinates in integrand functions
 - Consider adding default to argument media=CLASSICAL_VACUUM
-- Find a way to validate SurfaceSource/VolumeSource solvers
 - Implement solvers for
     - VolumeSource_Cylinder
     - VolumeSource_Sphere
