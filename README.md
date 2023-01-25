@@ -1,11 +1,12 @@
 # JefimenkoModels.jl
 
 `JefimenkoModels.jl` is a time-domain solver for the electromagnetic near-fields produced by
-some distribution of source charges and currents.
-
-This solver implements a generalized variant of the Jefimenko equations that allows for the
-consideration of magnetic charges and currents, which are often a useful analytical tool in
-electromagnetics modeling.
+an arbitrary distribution of charges and currents, both electric and magnetic. This solver
+implements a generalized version of the Jefimenko equations that enables the consideration of
+magnetic charges and currents, which are often a useful analytical tool in electromagnetics
+modeling. The solution process operates purely in the time-domain, enabling the study of
+wideband sources without artifacts caused by frequency-domain analysis and with reduced
+memory usage compared to FDTD methods.
 
 ## Status
 
@@ -17,8 +18,8 @@ is detailed in the following table.
 |:---|:---:|:---:|
 | `LineSource_Straight`       | :white_check_mark: | :white_check_mark: |
 | `SurfaceSource_Disk`        | :white_check_mark: | :white_check_mark: |
-| `SurfaceSource_Rectangle`   | :white_check_mark: |         :x:        |
-| `VolumeSource_Rectangular`  | :white_check_mark: |         :x:        |
+| `SurfaceSource_Rectangle`   | :white_check_mark: | :white_check_mark: |
+| `VolumeSource_Rectangular`  | :white_check_mark: | :white_check_mark: |
 | `VolumeSource_Cylinder`     |         :x:        |         :x:        |
 | `VolumeSource_Sphere`       |         :x:        |         :x:        |
 
@@ -63,12 +64,12 @@ function, and the `JefimenkoModels.NULL_CURRENT` function can be used in place o
 $J(\bar{r},t)$ function.
 
 In the current version of `JefimenkoModels`, source charge and current functions must be
-defined in a fairly-specific format. The functions should take two arguments: a
+defined in a specific format. The functions should take two arguments: a
 `UnitfulCoordinateSystem.AbstractCoordinate` indicating the spatial position evaluated, and
 the `Real`-typed time in implied units of seconds. The functions should return a Real-valued
 number with implied units according to the following tables.
 
-An update is planned that will require a `Unitful` time argument and return types. This will
+An update is planned that will enable `Unitful` time argument and return types. This will
 hopefully simplify the source design process and identify potential dimensional errors.
 
 **Table: Line Source Functions**
@@ -105,9 +106,14 @@ by the solver. Rather, it provides the user with a convenient place to store any
 metadata.
 
 The following example produces a `JefimenkoModel` with a single one-meter line source on
-the x-axis. This source is stimulated by a spatially-uniform electric current.
+the x-axis. This source is characterized by a spatially-uniform continuous wave (CW) electric
+current.
 ```julia
-model = let
+using JefimenkoModels
+using Unitful, UnitfulCoordinateSystems
+using Unitful.DefaultSymbols: m, ns
+
+model_line = let
     # Single line source on x-axis from -0.5m to +0.5m
     # Electric current only: spatially-uniform, x-directed, driven by 100 MHz CW sinusoid
     a = CoordinateCartesian(-0.5u"m", 0.0u"m", 0.0u"m")
@@ -126,4 +132,52 @@ model = let
 end
 ```
 
-### Calculate the electromagnetic fields (TODO)
+The following example produces a `JefimenkoModel` for a one-meter diameter aperture source on
+the xy-plane and centered on the origin. This source is characterized by a spatially-uniform
+electric current and driven by a wideband transient pulse.
+```julia
+using JefimenkoModels
+using Unitful, UnitfulCoordinateSystems
+using Unitful.DefaultSymbols: m, ns
+
+model_disk = let
+    # Surface disk source with radius 0.5m
+    # Electric current only: spatially-uniform, x-directed, driven by a transient pulse
+    ρ₀ = 0.5m
+    (t₀_s, f₀_Hz, β₀) = (5.0e-9, 500e6, 1.25)
+    sig(t_s::Real) = sin(2π*f₀_Hz*t_s) * exp(-β₀*(f₀_Hz*t_s)^2)
+    Je(r̄::AbstractCoordinate, t_s::Real) = x̂ .* sig(t_s-t₀_s)             # t in s -> Jₑ in A
+    source = SurfaceSource_Disk{Float64}(ρ₀, NULL_CHARGE, NULL_CHARGE, Je, NULL_CURRENT)
+
+    metadata = Dict(:description=>"Uniform current over a 0.5m disk, stimulated by transient pulse signal.")
+    
+    JefimenkoModel{Float64}(CLASSICAL_VACUUM, [source], metadata)
+end
+```
+
+### Calculate the electromagnetic fields
+
+The electromagnetic near-fields produced by the aperture source described above can be
+calculated by specifying an observation point and the desired time-domain.
+```julia
+# Observation location and time domain of interest
+r = CoordinateCartesian(0.0m, 0.0m, 1.5m)
+t = range(0.0ns, 20.0ns, length=800)
+
+# Calculate the fields at r over the time domain
+efield = map(t -> E(r,t,model_disk), t)
+hfield = map(t -> H(r,t,model_disk), t)
+```
+
+Inspecting the data on this specified time-domain, the source electric current density
+(spatially-uniform across the 1 meter diameter aperture) is
+
+![Source Current Density](docs/examples/disk/disk_fig_source.png)
+
+The electric field measured at the observation point is
+
+![Electric Field](docs/examples/disk/disk_fig_efield.png)
+
+And the magnetic field measured at the observation point is
+
+![Magnetic Field](docs/examples/disk/disk_fig_hfield.png)
