@@ -20,7 +20,7 @@ Calculate the integral using a specified `relative tolerance`.
 - `rtol::Real`: relative tolerance at which to solve the integral (optional)
 """
 function __E(r̄::AbstractCoordinate, t::Unitful.Time, source::LineSource_Straight{T},
-            media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
+             media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
     # Calculate the length of the line source from starting point ā to ending point b̄
     dmax::Unitful.Length = norm(source.b̄ - source.ā)
 
@@ -48,7 +48,7 @@ end
 ###########################################################################
 
 function __E(r̄::AbstractCoordinate, t::Unitful.Time, source::SurfaceSource_Disk{T},
-            media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
+             media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
     function disk_integrand_Vm2(u, p)::SVector{3,T}
         # Convert given (ρ[m],φ[rad]) to a Coordinate
         r̄′ = CoordinateCartesian(CoordinatePolar(u[1]*m, u[2]*rad))
@@ -61,16 +61,16 @@ function __E(r̄::AbstractCoordinate, t::Unitful.Time, source::SurfaceSource_Dis
     # Get integration limits: ρ ∈ [0,ρ₀], ϕ ∈ [0,2π]
     ρ₀_m = ustrip(T, m, source.ρ₀)
     lb = [zero(T), zero(T)]
-    ub = [ρ₀_m, T(2π)]
+    ub = [T(ρ₀_m), T(2π)]
 
-    # Define and solve the integral problem over a circular aperture,
+    # Define and solve the integral problem over a circular aperture
     prob = IntegralProblem(disk_integrand_Vm2, lb, ub)
     sol = solve(prob, HCubatureJL(), reltol=rtol)      # implied units [V/m² * m] -> [V/m]
     return ( (1/4π) .* (sol.u) .* (V/m) )
 end
 
 function __E(r̄::AbstractCoordinate, t::Unitful.Time, source::SurfaceSource_Rectangle{T},
-            media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
+             media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
     function integrand_Vm3(u, p)::SVector{3,T}
         r̄′ = CoordinateCartesian(u[1]*m, u[2]*m, 0.0m)
 
@@ -95,7 +95,7 @@ end
 ###########################################################################
 
 function __E(r̄::AbstractCoordinate, t::Unitful.Time, source::VolumeSource_Cylinder{T},
-    media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
+             media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
     error("Solver not yet implemented.")
 end
 
@@ -122,6 +122,6 @@ function __E(r̄::AbstractCoordinate, t::Unitful.Time, source::VolumeSource_Rect
 end
 
 function __E(r̄::AbstractCoordinate, t::Unitful.Time, source::VolumeSource_Sphere{T},
-    media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
+             media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
     error("Solver not yet implemented.")
 end

@@ -24,7 +24,7 @@ function __H(r̄::AbstractCoordinate, t::Unitful.Time, source::LineSource_Straig
     dmax::Unitful.Length = norm(source.b̄ - source.ā)
 
     # Calculate the integrand H-field vector in implied units [A/m²]
-    function integrand_Am2(u::Real, p)::Vector{T}
+    function integrand_Am2(u, p)::SVector{3,T}
         d::Unitful.Length = u * m
         
         # Parameterize a straight line from ā to b̄ according to the distance traveled
@@ -32,8 +32,8 @@ function __H(r̄::AbstractCoordinate, t::Unitful.Time, source::LineSource_Straig
         û = (source.b̄ - source.ā) ./ dmax
         r̄′::CoordinateCartesian = source.ā + (d .* û)
 
-        intH = __integrand_H_R1(r̄′; source=source, media=media, r̄=r̄, t=t)
-        return ustrip.(T, A/m^2, intH)
+        return __integrand_H(r̄′; source=source, media=media,
+                             r̄=CoordinateCartesian(r̄), t=t)::SVector{3,T}
     end
 
     # Define the integrand as a f(d) traveled along line source, solve it
@@ -47,20 +47,22 @@ end
 ###########################################################################
 
 function __H(r̄::AbstractCoordinate, t::Unitful.Time, source::SurfaceSource_Disk{T},
-    media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
-    function disk_integrand_Am2(ū,p)
-        # Assign aliases to ū values and convert to a Coordinate
-        (ρ_m, ϕ_rad) = ū
-        r̄′ = CoordinatePolar(ρ_m*m, ϕ_rad*rad)
+             media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
+    function disk_integrand_Am2(u, p)::SVector{3,T}
+        # Convert given (ρ[m],φ[rad]) to a Coordinate
+        r̄′ = CoordinateCartesian(CoordinatePolar(u[1]*m, u[2]*rad))
+
         # Return integrand scaled by the radial integration factor,
-        #   in implied units [A/m³ * m] -> [A/m²]
-        return __integrand_H_R2(r̄′; r̄=r̄, t=t, source=source, media=media) * ρ_m
+        return (__integrand_H(r̄′; source=source, media=media,
+                             r̄=CoordinateCartesian(r̄), t=t) .* u[1])::SVector{3,T}
     end
 
-    # Define and solve the integral problem over a circular aperture
+    # Get integration limits: ρ ∈ [0,ρ₀], ϕ ∈ [0,2π]
     ρ₀_m = ustrip(T, m, source.ρ₀)
     lb = [zero(T), zero(T)]
-    ub = [ρ₀_m, T(2π)]
+    ub = [T(ρ₀_m), T(2π)]
+
+    # Define and solve the integral problem over a circular aperture
     prob = IntegralProblem(disk_integrand_Am2, lb, ub)
     sol = solve(prob, HCubatureJL(), reltol=rtol)       # implied units [A/m² * m] -> [A/m]
     return ( (1/4π) .* (sol.u) .* (A/m) )
@@ -68,10 +70,11 @@ end
 
 function __H(r̄::AbstractCoordinate, t::Unitful.Time, source::SurfaceSource_Rectangle{T},
             media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
-    function integrand_Am3(u,p)
-        (x_m, y_m) = u
-        r̄′ = CoordinateCartesian(x_m*m, y_m*m, 0.0m)
-        return __integrand_H_R2(r̄′; r̄=r̄, t=t, source=source, media=media)  # implied [A/m³]
+    function integrand_Am3(u, p)::SVector{3,T}
+        r̄′ = CoordinateCartesian(u[1]*m, u[2]*m, 0.0m)
+
+        return __integrand_H(r̄′; source=source, media=media,
+                             r̄=CoordinateCartesian(r̄), t=t)::SVector{3,T}
     end
 
     # Get integration limits
@@ -91,16 +94,17 @@ end
 ###########################################################################
 
 function __H(r̄::AbstractCoordinate, t::Unitful.Time, source::VolumeSource_Cylinder{T},
-    media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
+             media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
     error("Solver not yet implemented.")
 end
 
 function __H(r̄::AbstractCoordinate, t::Unitful.Time, source::VolumeSource_Rectangular{T},
-    media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
-    function integrand_Am4(u,p)
-        (x_m, y_m, z_m) = u
-        r̄′ = CoordinateCartesian(x_m*m, y_m*m, z_m*m)
-        return __integrand_H_R3(r̄′; r̄=r̄, t=t, source=source, media=media)  # implied [A/m⁴]
+             media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
+    function integrand_Am4(u, p)::SVector{3,T}
+        r̄′ = CoordinateCartesian(u[1]*m, u[2]*m, u[3]*m)
+
+        return __integrand_H(r̄′; source=source, media=media,
+                             r̄=CoordinateCartesian(r̄), t=t)::SVector{3,T}
     end
 
     # Get integration limits
@@ -117,6 +121,6 @@ function __H(r̄::AbstractCoordinate, t::Unitful.Time, source::VolumeSource_Rect
 end
 
 function __H(r̄::AbstractCoordinate, t::Unitful.Time, source::VolumeSource_Sphere{T},
-    media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
+             media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
     error("Solver not yet implemented.")
 end

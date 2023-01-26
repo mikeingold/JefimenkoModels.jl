@@ -8,13 +8,13 @@ r̄′`. Parameterize the integrand function according to a particular `field so
 `propagation media`, and for an observer positioned at space-time point (`r̄`,`t`).
 
 # Arguments
-- `r̄′::AbstractCoordinate`: spatial coordinate of the source point
+- `r̄′::UnitfulCoordinateSystems.CoordinateCartesian`: coordinate of the source point
 
 # Parameters
-- `r̄::UnitfulCoordinateSystems.AbstractCoordinate`: spatial coordinate at the observation point
+- `r̄::UnitfulCoordinateSystems.CoordinateCartesian`: coordinate of the observation point
 - `t::Unitful.Time`: time at the observation point
 - `source::JefimenkoSource`: the source model generating the electric field
-- `media::PropagationMedia`: properties of the propagation media
+- `media::PropagationMedia_Simple`: properties of the propagation media
 
 # Returns
 - `SVector{3,T}`: the predicted vector-valued integrand value
