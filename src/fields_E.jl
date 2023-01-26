@@ -3,7 +3,8 @@
 ###########################################################################
 
 """
-    __E(r̄::AbstractCoordinate, t::Time, source::JefimenkoSource, media::PropagationMedia; rtol)
+    __E(r̄::AbstractCoordinate, t::Time, source::AbstractJefimenkoSource,
+        media::PropagationMedia; rtol=sqrt(eps))
 
 Calculate the electric field at (`r̄`,`t`) using the electric Jefimenko equation due to a
 particular `source`, transmitted through a particular homogeneous `propagation media`.
@@ -12,7 +13,7 @@ Calculate the integral using a specified `relative tolerance`.
 # Arguments
 - `r̄::UnitfulCoordinateSystems.AbstractCoordinate`: spatial location of the observation point
 - `t::Unitful.Time`: time at which the electric field is observed
-- `source::JefimenkoSource`: source of the electric field
+- `source::AbstractJefimenkoSource{T}`: source of the electric field
 - `media::PropagationMedia`: properties of the propagation media
 
 # Keywords
@@ -24,7 +25,7 @@ function __E(r̄::AbstractCoordinate, t::Unitful.Time, source::LineSource_Straig
     dmax::Unitful.Length = norm(source.b̄ - source.ā)
 
     # Calculate the integrand E-field vector in implied units [V/m²]
-    function integrand_Vm2(u::Real, p)::Vector{T}
+    function integrand_Vm2(u, p)::SVector{3,T}
         d::Unitful.Length = u * m
         
         # Parameterize a straight line from ā to b̄ according to the distance traveled
@@ -32,8 +33,8 @@ function __E(r̄::AbstractCoordinate, t::Unitful.Time, source::LineSource_Straig
         û = (source.b̄ - source.ā) ./ dmax
         r̄′::CoordinateCartesian = source.ā + (d .* û)
 
-        intE = __integrand_E_R1(r̄′; source=source, media=media, r̄=r̄, t=t)
-        return ustrip.(T, V/m^2, intE)
+        return __integrand_E(r̄′; source=source, media=media,
+                             r̄=CoordinateCartesian(r̄), t=t)::SVector{3,T}
     end
 
     # Define the integrand as a f(d) traveled along line source, solve it
@@ -48,13 +49,13 @@ end
 
 function __E(r̄::AbstractCoordinate, t::Unitful.Time, source::SurfaceSource_Disk{T},
             media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
-    function disk_integrand(ū,p)
-        # Assign aliases to ū values and convert to a Coordinate
-        (ρ_m, ϕ_rad) = ū
-        r̄′ = CoordinatePolar(ρ_m*m, ϕ_rad*rad)
-        # Return integrand scaled by the radial integration factor,
-        #   in implied units [V/m³ * m] -> [V/m²]
-        return __integrand_E_R2(r̄′; r̄=r̄, t=t, source=source, media=media) * ρ_m
+    function disk_integrand_Vm2(u, p)::SVector{3,T}
+        # Convert given (ρ[m],φ[rad]) to a Coordinate
+        r̄′ = CoordinateCartesian(CoordinatePolar(u[1]*m, u[2]*rad))
+
+        # Return integrand scaled by the radial integration factor
+        return (__integrand_E(r̄′; source=source, media=media,
+                             r̄=CoordinateCartesian(r̄), t=t) .* u[1])::SVector{3,T}
     end
 
     # Get integration limits: ρ ∈ [0,ρ₀], ϕ ∈ [0,2π]
@@ -63,17 +64,18 @@ function __E(r̄::AbstractCoordinate, t::Unitful.Time, source::SurfaceSource_Dis
     ub = [ρ₀_m, T(2π)]
 
     # Define and solve the integral problem over a circular aperture,
-    prob = IntegralProblem(disk_integrand, lb, ub)
+    prob = IntegralProblem(disk_integrand_Vm2, lb, ub)
     sol = solve(prob, HCubatureJL(), reltol=rtol)      # implied units [V/m² * m] -> [V/m]
     return ( (1/4π) .* (sol.u) .* (V/m) )
 end
 
 function __E(r̄::AbstractCoordinate, t::Unitful.Time, source::SurfaceSource_Rectangle{T},
             media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
-    function integrand_Vm3(u,p)
-        (x_m, y_m) = u
-        r̄′ = CoordinateCartesian(x_m*m, y_m*m, 0.0m)
-        return __integrand_E_R2(r̄′; r̄=r̄, t=t, source=source, media=media)  # implied [V/m³]
+    function integrand_Vm3(u, p)::SVector{3,T}
+        r̄′ = CoordinateCartesian(u[1]*m, u[2]*m, 0.0m)
+
+        return __integrand_E(r̄′; source=source, media=media,
+                             r̄=CoordinateCartesian(r̄), t=t)::SVector{3,T}
     end
 
     # Get integration limits
@@ -98,11 +100,12 @@ function __E(r̄::AbstractCoordinate, t::Unitful.Time, source::VolumeSource_Cyli
 end
 
 function __E(r̄::AbstractCoordinate, t::Unitful.Time, source::VolumeSource_Rectangular{T},
-    media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
-    function integrand_Vm4(u,p)
-        (x_m, y_m, z_m) = u
-        r̄′ = CoordinateCartesian(x_m*m, y_m*m, z_m*m)
-        return __integrand_E_R3(r̄′; r̄=r̄, t=t, source=source, media=media)  # implied [V/m⁴]
+             media::PropagationMedia_Simple; rtol=__DEFAULT_RTOL) where {T<:AbstractFloat}
+    function integrand_Vm4(u, p)::SVector{3,T}
+        r̄′ = CoordinateCartesian(u[1]*m, u[2]*m, u[3]*m)
+
+        return __integrand_E(r̄′; source=source, media=media,
+                             r̄=CoordinateCartesian(r̄), t=t)::SVector{3,T}
     end
 
     # Get integration limits

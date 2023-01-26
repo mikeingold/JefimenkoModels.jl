@@ -1,7 +1,10 @@
 # TODO
 
 ## In Progress
--
+- Condensing integrand functions into single for each (E vs H), reducing type instability
+    - Combine both into single file when done.
+    - Document expected units and dimensional analysis somewhere
+- Should __DEFAULT_RTOL be defined as a function __DEFAULT_RTOL(T)?
 
 ## Short Term
 - Figure out how to get E.(r,t,model) broadcasting working
@@ -10,7 +13,6 @@
 
 ## Medium Term
 - Develop/document constructor methods for sources and models
-- Evaluate type stability of coordinates in integrand functions
 - Implement solvers for
     - VolumeSource_Cylinder
     - VolumeSource_Sphere
@@ -20,7 +22,6 @@
 - Re-assess the need for solver type parameterization
     - Does it even work as intended?
     - Is there a performance benefit?
-    - Should __DEFAULT_RTOL be defined as a function __DEFAULT_RTOL(T)?
 - Evaluate whether Automatic Differentiation can be made to operate through solutions
 - Consider permitting sources to have a variable center/orientation
 - Consider consolidating the integrand functions using ComponentArray-parameterized source values
