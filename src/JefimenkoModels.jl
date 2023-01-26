@@ -161,10 +161,8 @@ module JefimenkoModels
         return cross(Ert,Hrt) .|> W/m^2
     end
 
-    include("integrands_E.jl")
+    include("integrands.jl")
     include("fields_E.jl")
-
-    include("integrands_H.jl")
     include("fields_H.jl")
 
     export E, H, P
