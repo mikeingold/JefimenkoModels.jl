@@ -1,17 +1,18 @@
 # TODO
 
 ## In Progress
-- Condensing integrand functions into single for each (E vs H), reducing type instability
-    - Combine both into single file when done.
-    - Document expected units and dimensional analysis somewhere
 - Should __DEFAULT_RTOL be defined as a function __DEFAULT_RTOL(T)?
 
 ## Short Term
-- Figure out how to get E.(r,t,model) broadcasting working
+- Implement custom `Base.show` pretty-printing for structs
 - Either remove Unicode from struct field naming OR provide non-Unicode accessors
 - Benchmark a 3D volume source against JefiGPU
 
 ## Medium Term
+- Make better documentation for source function definitions (units, types, etc)
+    - Create a test/inspect/validate function for users to look for issues in their definitions?
+- Address type stability of source functions by extend struct parameterization
+    - [Reference to conversation on Julia Zulip](https://julialang.zulipchat.com/#narrow/stream/225542-helpdesk/topic/.E2.9C.94.20High.20GC.20Time.20in.20HCubature/near/323730178)
 - Develop/document constructor methods for sources and models
 - Implement solvers for
     - VolumeSource_Cylinder
