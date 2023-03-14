@@ -6,7 +6,7 @@ makedocs(sitename="JefimenkoModels.jl",
 	 authors = "Michael Ingold",
 	 pages = [
 		"Home" => "index.md",
-		"Examples" => "examples.md",
+		"Tutorial" => "tutorial.md",
 		"Reference" => "reference.md"
 	 ]
 	)
