@@ -1,10 +1,9 @@
 push!(LOAD_PATH, "../src/")
 
-using Documenter
-#using JefimenkoModels
+using Documenter, JefimenkoModels
 
-makedocs(
-	 sitename="JefimenkoModels.jl",
+makedocs(sitename="JefimenkoModels.jl",
+	 authors = "Michael Ingold",
 	 pages = [
 		"Home" => "index.md",
 		"Examples" => "examples.md",
