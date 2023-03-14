@@ -1,5 +1,7 @@
 # JefimenkoModels.jl
 
+Documentation: [![](https://img.shields.io/badge/docs-latest-blue.svg)](https://mikeingold.github.io/JefimenkoModels.jl/dev/)
+
 `JefimenkoModels.jl` is a time-domain solver for the electromagnetic near-fields produced by
 an arbitrary distribution of charges and currents, both electric and magnetic. This solver
 implements a generalized version of the Jefimenko equations that enables the consideration of
