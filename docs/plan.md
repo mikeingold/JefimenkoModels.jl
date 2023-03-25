@@ -1,9 +1,7 @@
 # TODO
 
-## In Progress
-- Should __DEFAULT_RTOL be defined as a function __DEFAULT_RTOL(T)?
-
 ## Short Term
+- Should __DEFAULT_RTOL be defined as a function __DEFAULT_RTOL(T)?
 - Implement custom `Base.show` pretty-printing for structs
 - Either remove Unicode from struct field naming OR provide non-Unicode accessors
 - Benchmark a 3D volume source against JefiGPU
