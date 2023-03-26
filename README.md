@@ -1,6 +1,6 @@
 # JefimenkoModels.jl
 
-Documentation: [![](https://img.shields.io/badge/docs-latest-blue.svg)](https://mikeingold.github.io/JefimenkoModels.jl/dev/)
+[![](https://img.shields.io/badge/docs-latest-blue.svg)](https://mikeingold.github.io/JefimenkoModels.jl/dev/)
 
 `JefimenkoModels.jl` is a time-domain solver for the electromagnetic near-fields produced by
 an arbitrary distribution of charges and currents, both electric and magnetic. This solver
@@ -11,7 +11,7 @@ wideband sources without artifacts caused by frequency-domain analysis and with 
 memory usage compared to FDTD methods.
 
 This package leverages the
-[UnitfulCoordinateSystems.jl](https://gitlab.com/mike.ingold/unitfulcoordinatesystems.jl)
+[UnitfulCoordinateSystems.jl](https://github.com/mikeingold/UnitfulCoordinateSystems.jl)
 package to provide a handy and performant way to deal with `Unitful` coordinate data.
 
 ## Status
