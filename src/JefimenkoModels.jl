@@ -1,10 +1,8 @@
 module JefimenkoModels
-    using LinearAlgebra, StaticArrays
     using Unitful, UnitfulCoordinateSystems
     using Unitful.DefaultSymbols: W, A, V, C, m, s, rad
     using PhysicalConstants.CODATA2018: c_0, ε_0, μ_0
-    using ForwardDiff, Integrals
-        # add Integrals (QuadGK) after Unitful due to bug (https://github.com/JuliaMath/QuadGK.jl/issues/63)
+    using ForwardDiff, Integrals, LinearAlgebra, StaticArrays
 
     __DEFAULT_RTOL = sqrt(eps())
 
@@ -14,6 +12,7 @@ module JefimenkoModels
 
     # Data structures
     include("structs.jl")
+    include("accessors.jl")
 
     CLASSICAL_VACUUM = let
         ε₀ = uconvert((A*s)/(V*m), float(ε_0))
