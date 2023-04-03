@@ -5,8 +5,8 @@ using JefimenkoModels, Test
 @testset "Accessors for LineSource_Straight" begin
     a = CoordinateCartesian(-0.5m, 0.0m, 0.0m)
     b = CoordinateCartesian( 0.5m, 0.0m, 0.0m)
+    rho(r̄::AbstractCoordinate, t_s::Real) = cos(2π*100e6*t_s)^2
     J(r̄::AbstractCoordinate, t_s::Real) = x̂ .* cos(2π*100e6*t_s)
-    rho(r̄::AbstractCoordinate, t_s::Real) = x̂ .* cos(2π*100e6*t_s)^2
     source = LineSource_Straight{Float64}(a, b, rho, rho, J, J)
 
 	@test source.a.x ≈ source.ā.x ≈ -0.5m
