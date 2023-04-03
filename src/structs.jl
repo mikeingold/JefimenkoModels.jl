@@ -15,30 +15,30 @@ abstract type AbstractJefimenkoSource{T} end
             xlims::Tuple{Unitful.Length, Unitful.Length}
             ylims::Tuple{Unitful.Length, Unitful.Length}
             zlims::Tuple{Unitful.Length, Unitful.Length}
-            ρₑ::Function
-            ρₕ::Function
-            Jₑ::Function
-            Jₕ::Function
+            rho_e::Function
+            rho_h::Function
+            J_e::Function
+            J_h::Function
         end
 
         struct VolumeSource_Cylinder{T} <: AbstractVolumeSource{T}
             r::Tuple{Unitful.Length, Unitful.Length}
-            ϕlims::Tuple{Unitful.Length, Unitful.Length}
+            philims::Tuple{Unitful.Length, Unitful.Length}
             zlims::Tuple{Unitful.Length, Unitful.Length}
-            ρₑ::Function
-            ρₕ::Function
-            Jₑ::Function
-            Jₕ::Function
+            rho_e::Function
+            rho_h::Function
+            J_e::Function
+            J_h::Function
         end
 
         struct VolumeSource_Sphere{T} <: AbstractVolumeSource{T}
             r::Tuple{Unitful.Length, Unitful.Length}
-            θlims::Tuple{Unitful.Length, Unitful.Length}
-            ϕlims::Tuple{Unitful.Length, Unitful.Length}
-            ρₑ::Function
-            ρₕ::Function
-            Jₑ::Function
-            Jₕ::Function
+            thetalims::Tuple{Unitful.Length, Unitful.Length}
+            philims::Tuple{Unitful.Length, Unitful.Length}
+            rho_e::Function
+            rho_h::Function
+            J_e::Function
+            J_h::Function
         end
     
     export VolumeSource_Rectangular, VolumeSource_Cylinder, VolumeSource_Sphere
@@ -52,18 +52,18 @@ abstract type AbstractJefimenkoSource{T} end
         struct SurfaceSource_Rectangle{T} <: AbstractSurfaceSource{T}
             xlims::Tuple{Unitful.Length, Unitful.Length}
             ylims::Tuple{Unitful.Length, Unitful.Length}
-            ρₑ::Function
-            ρₕ::Function
-            Jₑ::Function
-            Jₕ::Function
+            rho_e::Function
+            rho_h::Function
+            J_e::Function
+            J_h::Function
         end
 
         struct SurfaceSource_Disk{T} <: AbstractSurfaceSource{T}
-            ρ₀::Unitful.Length
-            ρₑ::Function
-            ρₕ::Function
-            Jₑ::Function
-            Jₕ::Function
+            r::Unitful.Length
+            rho_e::Function
+            rho_h::Function
+            J_e::Function
+            J_h::Function
         end
         
     export SurfaceSource_Rectangle, SurfaceSource_Disk
@@ -75,12 +75,12 @@ abstract type AbstractJefimenkoSource{T} end
     abstract type AbstractLineSource{T} <: AbstractJefimenkoSource{T} end
 
         struct LineSource_Straight{T} <: AbstractLineSource{T}
-            ā::AbstractCoordinate
-            b̄::AbstractCoordinate
-            ρₑ::Function
-            ρₕ::Function
-            Jₑ::Function
-            Jₕ::Function
+            a::AbstractCoordinate
+            b::AbstractCoordinate
+            rho_e::Function
+            rho_h::Function
+            J_e::Function
+            J_h::Function
         end
 
     export LineSource_Straight
@@ -92,14 +92,14 @@ abstract type AbstractJefimenkoSource{T} end
 abstract type AbstractPropagationMedia end
 
     struct PropagationMedia_Simple <: AbstractPropagationMedia
-        ε::Quantity
-        μ::Quantity
+        epsilon::Quantity
+        mu::Quantity
         c::Quantity
     end
 
     struct PropagationMedia_DiagonallyAnisotropic <: AbstractPropagationMedia
-        ε::Diagonal{Quantity}
-        μ::Diagonal{Quantity}
+        epsilon::Diagonal{Quantity}
+        mu::Diagonal{Quantity}
         c::Diagonal{Quantity}
     end
 
