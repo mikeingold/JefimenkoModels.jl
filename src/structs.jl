@@ -3,87 +3,13 @@
 ################################################################################
 
 # Type T defines the data type used for calculation, typically <: AbstractFloat
-abstract type AbstractJefimenkoSource{T} end
-
-    ############################################################################
-    #                        VOLUME SOURCES
-    ############################################################################
-
-    abstract type AbstractVolumeSource{T} <: AbstractJefimenkoSource{T} end
-
-        struct VolumeSource_Rectangular{T} <: AbstractVolumeSource{T}
-            xlims::Tuple{Unitful.Length, Unitful.Length}
-            ylims::Tuple{Unitful.Length, Unitful.Length}
-            zlims::Tuple{Unitful.Length, Unitful.Length}
-            rho_e::Function
-            rho_h::Function
-            J_e::Function
-            J_h::Function
-        end
-
-        struct VolumeSource_Cylinder{T} <: AbstractVolumeSource{T}
-            r::Tuple{Unitful.Length, Unitful.Length}
-            philims::Tuple{Unitful.Length, Unitful.Length}
-            zlims::Tuple{Unitful.Length, Unitful.Length}
-            rho_e::Function
-            rho_h::Function
-            J_e::Function
-            J_h::Function
-        end
-
-        struct VolumeSource_Sphere{T} <: AbstractVolumeSource{T}
-            r::Tuple{Unitful.Length, Unitful.Length}
-            thetalims::Tuple{Unitful.Length, Unitful.Length}
-            philims::Tuple{Unitful.Length, Unitful.Length}
-            rho_e::Function
-            rho_h::Function
-            J_e::Function
-            J_h::Function
-        end
-    
-    export VolumeSource_Rectangular, VolumeSource_Cylinder, VolumeSource_Sphere
-
-    ############################################################################
-    #                        SURFACE SOURCES
-    ############################################################################
-
-    abstract type AbstractSurfaceSource{T} <: AbstractJefimenkoSource{T} end
-
-        struct SurfaceSource_Rectangle{T} <: AbstractSurfaceSource{T}
-            xlims::Tuple{Unitful.Length, Unitful.Length}
-            ylims::Tuple{Unitful.Length, Unitful.Length}
-            rho_e::Function
-            rho_h::Function
-            J_e::Function
-            J_h::Function
-        end
-
-        struct SurfaceSource_Disk{T} <: AbstractSurfaceSource{T}
-            r::Unitful.Length
-            rho_e::Function
-            rho_h::Function
-            J_e::Function
-            J_h::Function
-        end
-        
-    export SurfaceSource_Rectangle, SurfaceSource_Disk
-
-    ############################################################################
-    #                        LINE SOURCES
-    ############################################################################
-
-    abstract type AbstractLineSource{T} <: AbstractJefimenkoSource{T} end
-
-        struct LineSource_Straight{T} <: AbstractLineSource{T}
-            a::AbstractCoordinate
-            b::AbstractCoordinate
-            rho_e::Function
-            rho_h::Function
-            J_e::Function
-            J_h::Function
-        end
-
-    export LineSource_Straight
+struct RadiationSource{G, T} where {G <: Meshes.Geometry, F1 <: Function, F2 <: Function, F3 <: Function, F4 <: Function}
+    geometry::G
+    rho_e::F1
+    rho_h::F2
+    J_e::F3
+    J_h::F4
+end
 
 ################################################################################
 #                        PROPAGATION MEDIA

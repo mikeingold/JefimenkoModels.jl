@@ -1,4 +1,6 @@
 module JefimenkoModels
+    import Meshes
+    
     using Unitful, UnitfulCoordinateSystems
     using Unitful.DefaultSymbols: W, A, V, C, m, s, rad
     using PhysicalConstants.CODATA2018: c_0, ε_0, μ_0
@@ -12,6 +14,8 @@ module JefimenkoModels
 
     # Data structures
     include("structs.jl")
+    export RadiationSource
+
     include("accessors.jl")
 
     CLASSICAL_VACUUM = let
