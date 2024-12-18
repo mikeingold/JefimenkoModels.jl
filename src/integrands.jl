@@ -20,7 +20,7 @@ r̄′`. Parameterize the integrand function according to a particular `field so
 function _integrand_E(r̄′::Meshes.Point, r̄::Meshes.Point, t::Unitful.Time, source::RadiationSource, media::PropagationMedia_Simple)
     # Get spatial properties, in implicit units of meters
     Δr̄_m::SVector{3,T} = ustrip.(T, m, SVector(r̄ - r̄′))      #  vector r̄-r̄′
-    r_m::T = norm(Δr̄_m)                                      #  magnitude |r̄-r̄′|
+    r_m::T = LinearAlgebra.norm(Δr̄_m)                        #  magnitude |r̄-r̄′|
 
     # Get media properties, in implicit units as specified
     c::T = ustrip(T, m/s, media.c)               #  speed of light
@@ -71,7 +71,7 @@ r̄′`. Parameterize the integrand function according to a particular `field so
 function _integrand_H(r̄′::Meshes.Point, r̄::Meshes.Point, t::Unitful.Time, source::RadiationSource, media::PropagationMedia_Simple)
     # Get spatial properties, in implicit units of meters
     Δr̄_m::SVector{3,T} = ustrip.(T, m, SVector(r̄ - r̄′))      #  SVector r̄-r̄′
-    r_m::T = norm(Δr̄_m)                                      #  magnitude |r̄-r̄′|
+    r_m::T = LinearAlgebra.norm(Δr̄_m)                        #  magnitude |r̄-r̄′|
 
     # Get media properties, in implicit units as specified
     c::T = ustrip(T, m/s, media.c)               #  speed of light in [m/s]
