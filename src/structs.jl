@@ -16,15 +16,15 @@ struct PropagationMedia_DiagonallyAnisotropic{E <: Quantity, U <: Quantity, C <:
     c::Diagonal{C}
 end
 
-function Base.getproperty(m::AbstractPropagationMedia, sym::Symbol)
+function Base.getproperty(media::AbstractPropagationMedia, sym::Symbol)
     if sym in (:epsilon, :mu, :c)  # included
-        return getfield(s, sym)
+        return getfield(media, sym)
     elseif sym in (:ε, :ϵ)  # aliases
-        return getfield(s, :epsilon)
+        return getfield(media, :epsilon)
     elseif sym in (:μ)  # aliases
-        return getfield(s, :mu)
+        return getfield(media, :mu)
     else  # fallback
-        return getfield(s, sym)
+        return getfield(media, sym)
     end
 end
 
@@ -40,19 +40,19 @@ struct RadiationSource{G <: Meshes.Geometry, F1 <: Function, F2 <: Function, F3 
     J_h::F4
 end
 
-function Base.getproperty(s::RadiationSource, sym::Symbol)
+function Base.getproperty(source::RadiationSource, sym::Symbol)
     if sym in (:geometry, :rho_e, :rho_h, :J_e, :J_h)  # included
-        return getfield(s, sym)
+        return getfield(source, sym)
     elseif sym in (:ρₑ, :ρe)  # aliases
-        return getfield(s, :rho_e)
+        return getfield(source, :rho_e)
     elseif sym in (:ρₕ, :ρh)  # aliases
-        return getfield(s, :rho_h)
+        return getfield(source, :rho_h)
     elseif sym in (:Jₑ, :Je)  # aliases
-        return getfield(s, :J_e)
+        return getfield(source, :J_e)
     elseif sym in (:Jₕ, :Jh)  # aliases
-        return getfield(s, :J_h)
+        return getfield(source, :J_h)
     else  # fallback
-        return getfield(s, sym)
+        return getfield(source, sym)
     end
 end
 
