@@ -32,16 +32,16 @@ end
 
 abstract type AbstractPropagationMedia end
 
-struct PropagationMedia_Simple <: AbstractPropagationMedia
-    epsilon::Quantity
-    mu::Quantity
-    c::Quantity
+struct PropagationMedia_Simple{E <: Quantity, U <: Quantity, C <: Quantity} <: AbstractPropagationMedia
+    epsilon::E
+    mu::U
+    c::C
 end
 
-struct PropagationMedia_DiagonallyAnisotropic <: AbstractPropagationMedia
-    epsilon::Diagonal{Quantity}
-    mu::Diagonal{Quantity}
-    c::Diagonal{Quantity}
+struct PropagationMedia_DiagonallyAnisotropic{E <: Quantity, U <: Quantity, C <: Quantity} <: AbstractPropagationMedia
+    epsilon::Diagonal{E}
+    mu::Diagonal{U}
+    c::Diagonal{C}
 end
 
 function Base.getproperty(m::AbstractPropagationMedia, sym::Symbol)
