@@ -3,13 +3,12 @@
 ## Refactoring
 
 First
-- Review integrand functions
-  - Handle Meshes.Point coordinates
-  - Allow Unitful outputs
+- Try it out and see what's broken
 
 Then
+- Implement TestItems.jl, write unit tests
+- Implement CI actions
 - Implement `Base.show` for structs
-- Write unit tests
 - Update documentation
 - Benchmark models between old version and new
 
