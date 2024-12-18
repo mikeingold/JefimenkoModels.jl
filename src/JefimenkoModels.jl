@@ -15,8 +15,6 @@ module JefimenkoModels
     include("utils.jl")
     export CLASSICAL_VACUUM, NULL_CHARGE, NULL_CURRENT, t′
 
-    include("integrands.jl")
-
     include("fields.jl")
     export E, H, P
 end
