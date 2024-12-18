@@ -9,8 +9,6 @@ module JefimenkoModels
     include("structs.jl")
     export RadiationSource, JefimenkoModel, PropagationMedia_Simple, PropagationMedia_DiagonallyAnisotropic
 
-    include("accessors.jl")
-
     include("utils.jl")
     export CLASSICAL_VACUUM, NULL_CHARGE, NULL_CURRENT, t′
 
