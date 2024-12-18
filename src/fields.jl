@@ -111,27 +111,3 @@ function _H(
 
     return (1/4π) .* MeshIntegrals.integral(integrand, source.geometry, rule)
 end
-
-"""
-    _P(r̄, t, source, media, rule)
-
-Calculate the Poynting vector 𝐏 observed at space-time point (`r̄`,`t`) due to
-a particular `source`, transmitted through a particular `propagation media`. Calculate
-the integral using a specified `integration rule`.
-
-# Arguments
-- `r̄::Meshes.Point`: spatial location of the observation point
-- `t::Unitful.Time`: time at which the field is observed
-- `source::RadiationSource`: source of the field
-- `media::PropagationMedia`: properties of the propagation media
-- `rule::MeshIntegrals.IntegrationRule`: rule to use for numerical integration
-"""
-function _P(
-    r̄::Meshes.Point,
-    t::Unitful.Time,
-    source::RadiationSource,
-    media::PropagationMedia_Simple,
-    rule::MeshIntegrals.IntegrationRule = MeshIntegrals.HAdaptiveCubature()
-)
-
-end
