@@ -9,7 +9,7 @@ module JefimenkoModels
     using Unitful.DefaultSymbols: W, A, V, C, m, s, rad
 
     include("structs.jl")
-    export AbstractPropagationMedia, PropagationMedia_Simple, PropagationMedia_DiagonallyAnisotropic
+    export AbstractPropagationMedia, SimpleMedia
     export RadiationSource, JefimenkoModel
 
     include("utils.jl")

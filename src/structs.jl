@@ -4,17 +4,19 @@
 
 abstract type AbstractPropagationMedia end
 
-struct PropagationMedia_Simple{E <: Quantity, U <: Quantity, C <: Quantity} <: AbstractPropagationMedia
+struct SimpleMedia{E <: Quantity, U <: Quantity, C <: Quantity} <: AbstractPropagationMedia
     epsilon::E
     mu::U
     c::C
 end
 
+#=
 struct PropagationMedia_DiagonallyAnisotropic{E <: Quantity, U <: Quantity, C <: Quantity} <: AbstractPropagationMedia
     epsilon::Diagonal{E}
     mu::Diagonal{U}
     c::Diagonal{C}
 end
+=#
 
 function Base.getproperty(media::AbstractPropagationMedia, sym::Symbol)
     if sym in (:epsilon, :mu, :c)  # included
