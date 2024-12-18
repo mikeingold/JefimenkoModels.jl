@@ -1,6 +1,7 @@
 module JefimenkoModels
     import Meshes
 
+    using ForwardDiff
     using LinearAlgebra
     using PhysicalConstants.CODATA2018: c_0, ε_0, μ_0
     using StaticArrays

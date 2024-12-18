@@ -79,7 +79,7 @@ function _E(
     media::PropagationMedia_Simple,
     rule::MeshIntegrals.IntegrationRule = MeshIntegrals.HAdaptiveCubature()
 )
-    integrand = _integrand_E(r̄′; source=source, media=media, r̄=CoordinateCartesian(r̄), t=t)
+    integrand(r̄′) = _integrand_E(r̄′, r̄, t, source, media)
     return (1/4π) .* MeshIntegrals.integral(integrand, source.geometry, rule)
 end
 
@@ -104,10 +104,6 @@ function _H(
     media::PropagationMedia_Simple,
     rule::MeshIntegrals.IntegrationRule = MeshIntegrals.HAdaptiveCubature()
 )
-    function integrand_Am4(u, p)
-        r̄′ = CoordinateCartesian(u[1]*m, u[2]*m, u[3]*m)
-        return _integrand_H(r̄′; source=source, media=media, r̄=CoordinateCartesian(r̄), t=t)
-    end
-
+    integrand(r̄′) = _integrand_H(r̄′, r̄, t, source, media)
     return (1/4π) .* MeshIntegrals.integral(integrand, source.geometry, rule)
 end
