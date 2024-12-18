@@ -1,9 +1,8 @@
 ################################################################################
-#                        JEFIMENKOMODEL SOURCES
+#                        RADIATION SOURCES
 ################################################################################
 
-# Type T defines the data type used for calculation, typically <: AbstractFloat
-struct RadiationSource{G, T} where {G <: Meshes.Geometry, F1 <: Function, F2 <: Function, F3 <: Function, F4 <: Function}
+struct RadiationSource{G, F1, F2, F3, F4} where {G <: Meshes.Geometry, F1 <: Function, F2 <: Function, F3 <: Function, F4 <: Function}
     geometry::G
     rho_e::F1
     rho_h::F2
@@ -17,28 +16,24 @@ end
 
 abstract type AbstractPropagationMedia end
 
-    struct PropagationMedia_Simple <: AbstractPropagationMedia
-        epsilon::Quantity
-        mu::Quantity
-        c::Quantity
-    end
+struct PropagationMedia_Simple <: AbstractPropagationMedia
+    epsilon::Quantity
+    mu::Quantity
+    c::Quantity
+end
 
-    struct PropagationMedia_DiagonallyAnisotropic <: AbstractPropagationMedia
-        epsilon::Diagonal{Quantity}
-        mu::Diagonal{Quantity}
-        c::Diagonal{Quantity}
-    end
-
-export PropagationMedia_Simple, PropagationMedia_DiagonallyAnisotropic
+struct PropagationMedia_DiagonallyAnisotropic <: AbstractPropagationMedia
+    epsilon::Diagonal{Quantity}
+    mu::Diagonal{Quantity}
+    c::Diagonal{Quantity}
+end
 
 ################################################################################
 #                        JEFIMENKO MODELS
 ################################################################################
 
-struct JefimenkoModel{T}
-    media::AbstractPropagationMedia
-    sources::Vector{AbstractJefimenkoSource{T}}
+struct JefimenkoModel{M, S} where {M <: AbstractPropagationMedia, S <: RadiationSource}
+    media::M
+    sources::Vector{S}
     metadata::Dict{Symbol,Any}
 end
-
-export JefimenkoModel
