@@ -6,7 +6,7 @@ CLASSICAL_VACUUM = let
     ε₀ = uconvert((A*s)/(V*m), float(ε_0))
     μ₀ = uconvert((V*s)/(A*m), float(μ_0))
     c₀ = uconvert(m/s, float(c_0))
-    PropagationMedia_Simple(ε₀, μ₀, c₀)
+    SimpleMedia(ε₀, μ₀, c₀)
 end
 
 NULL_CHARGE(r̄::Meshes.Point, t_s::Real) = 0
