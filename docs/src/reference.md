@@ -13,9 +13,9 @@ JefimenkoModels.P
 ## Internal API
 
 ```@docs
-JefimenkoModels.__E
-JefimenkoModels.__integrand_E
-JefimenkoModels.__H
-JefimenkoModels.__integrand_H
-JefimenkoModels.__P
+JefimenkoModels._E
+JefimenkoModels._integrand_E
+JefimenkoModels._H
+JefimenkoModels._integrand_H
+JefimenkoModels._P
 ```

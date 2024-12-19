@@ -8,7 +8,7 @@ spatially-homogeneous.
 When designing a model that will propagate in vacuum (free space), a pre-defined media is
 provided.
 ```julia
-media::PropagationMedia_Simple = JefimenkoModels.CLASSICAL_VACUUM
+media::SimpleMedia = JefimenkoModels.CLASSICAL_VACUUM
 ```
 
 Alternatively, a propagation media with Real-valued permittivity (``\varepsilon``) and
@@ -19,7 +19,7 @@ units: ``\varepsilon`` in [F/m] or [As/Vm], and $\mu$ in [N/A``^2``] or [Vs/Am].
 epsilon = 8.854_188e-15 * u"(kA*s)/(V*m)"
 mu = 1.256_637e-3 * u"(mV*s)/(A*m)"
 c = 2.997_925e5 * u"km/s"
-PropagationMedia_Simple(epsilon, mu, c)
+SimpleMedia(epsilon, mu, c)
 ```
 
 ## Define a source
@@ -30,14 +30,9 @@ charges (``\rho``), a pair of pre-defined null sources are provided for convenie
 function, and the `JefimenkoModels.NULL_CURRENT` function can be used in place of either
 ``J(\bar{r},t)`` function.
 
-In the current version of `JefimenkoModels`, source charge and current functions must be
-defined in a specific format. The functions should take two arguments: a
-`UnitfulCoordinateSystem.AbstractCoordinate` indicating the spatial position evaluated, and
-the `Real`-typed time in implied units of seconds. The functions should return a Real-valued
-number with implied units according to the following tables.
-
-An update is planned that will enable `Unitful` time argument and return types. This will
-hopefully simplify the source design process and identify potential dimensional errors.
+Source charge and current functions must be defined in a specific format. The functions
+must take two arguments: a `Meshes.Point` indicating the position within the source being
+evaluated, and the source time.
 
 **Table: Line Source Functions**
 
@@ -77,17 +72,23 @@ the x-axis. This source is characterized by a spatially-uniform continuous wave 
 current.
 ```julia
 using JefimenkoModels
-using Unitful, UnitfulCoordinateSystems
-using Unitful.DefaultSymbols: m, ns
+using Meshes
+using Unitful
+using Unitful.DefaultSymbols: m, s, A
 
 model_line = let
     # Single line source on x-axis from -0.5m to +0.5m
-    # Electric current only: spatially-uniform, x-directed, driven by 100 MHz CW sinusoid
-    a = CoordinateCartesian(-0.5m, 0.0m, 0.0m)
-    b = CoordinateCartesian( 0.5m, 0.0m, 0.0m)
-    Je(r̄::AbstractCoordinate, t_s::Real) = x̂ .* cos(2π*100e6*t_s)     # t in s -> Je in A
-    source = LineSource_Straight{Float64}(a, b, NULL_CHARGE, NULL_CHARGE, Je, NULL_CURRENT)
+    a = Meshes.Point(-0.5m, 0.0m, 0.0m)
+    b = Meshes.Point( 0.5m, 0.0m, 0.0m)
+    segment = Meshes.Segment(a, b)
 
+    # Electric current only: spatially-uniform, x-directed, driven at 100 MHz
+    x̂ = [1, 0, 0]
+    f = 100e6 / s
+    Je(r̄, t) = cos(2π * ω * t) .* x̂ .* A
+    source = RadiationSource(segment, NULL_CHARGE, NULL_CHARGE, Je, NULL_CURRENT)
+
+    # Store some metadata in the model
     metadata = Dict(:name => "Tutorial Example",
                     :charges => "None",
                     :currents => "Electric-Only"
@@ -95,7 +96,7 @@ model_line = let
                     :source_length => 1.0m,
                     :signal_type => "100 MHz CW")
 
-    JefimenkoModel{Float64}(CLASSICAL_VACUUM, [source], metadata)
+    JefimenkoModel(CLASSICAL_VACUUM, [source], metadata)
 end
 ```
 
@@ -131,8 +132,8 @@ r = CoordinateCartesian(0.0m, 0.0m, 1.5m)
 t = range(0.0ns, 20.0ns, length=800)
 
 # Calculate the fields at r over the time domain
-efield = map(t -> E(r,t,model_disk), t)
-hfield = map(t -> H(r,t,model_disk), t)
+efield = map(t -> E(r, t, model_disk), t)
+hfield = map(t -> H(r, t, model_disk), t)
 ```
 
 Inspecting the data on this specified time-domain, the source electric current density
