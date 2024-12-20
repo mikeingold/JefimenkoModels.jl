@@ -79,7 +79,7 @@ struct JefimenkoModel{M <: AbstractPropagationMedia, S <: RadiationSource}
     metadata::Dict{Symbol, Any}
 
     # Metadata is optional
-    function JefimenkoModel(
+    function JefimenkoModel{M, S}(
         media::M,
         sources::Vector{S},
         metadata::Dict{Symbol, Any} = Dict{Symbol, Any}()
