@@ -14,7 +14,11 @@ a specified `relative tolerance`.
 - `t::Unitful.Time`: time at which the electric field is observed
 - `model::JefimenkoModel`: model of the transmitting source and propagation media
 """
-function E(r̄::Meshes.Point, t::Unitful.Time, model::JefimenkoModel)
+function E(
+    r̄::Meshes.Point,
+    t::Unitful.Time,
+    model::JefimenkoModel
+)
     # Superimpose the contributions of the E(r̄,t) produced by each source in model
     return mapreduce(source -> _E(r̄, t, source, model.media, rule), +, model.sources)
 end
@@ -31,7 +35,11 @@ a specified `relative tolerance`.
 - `t::Unitful.Time`: time at which the field is observed
 - `model::JefimenkoModel`: model of the transmitting source and propagation media
 """
-function H(r̄::Meshes.Point, t::Unitful.Time, model::JefimenkoModel)
+function H(
+    r̄::Meshes.Point,
+    t::Unitful.Time,
+    model::JefimenkoModel
+)
     # Superimpose the contributions of the 𝐇(r̄,t) produced by each source in model
     return mapreduce(source -> _H(r̄, t, source, model.media, rule), +, model.sources) 
 end
@@ -48,7 +56,11 @@ integrals using a specified `relative tolerance`.
 - `t::Unitful.Time`: time at which the field is observed
 - `model::JefimenkoModel`: model of the transmitting source and propagation media
 """
-function P(r̄::Meshes.Point, t::Unitful.Time, model::JefimenkoModel)
+function P(
+    r̄::Meshes.Point,
+    t::Unitful.Time,
+    model::JefimenkoModel
+)
     Ert = E(r̄, t, model)
     Hrt = H(r̄, t, model)
     return cross(Ert, Hrt) .|> W/m^2
@@ -76,7 +88,7 @@ function _E(
     r̄::Meshes.Point,
     t::Unitful.Time,
     source::RadiationSource,
-    media::PropagationMedia_Simple,
+    media::SimpleMedia,
     rule::MeshIntegrals.IntegrationRule = MeshIntegrals.HAdaptiveCubature()
 )
     integrand(r̄′) = _integrand_E(r̄′, r̄, t, source, media)
@@ -101,7 +113,7 @@ function _H(
     r̄::Meshes.Point,
     t::Unitful.Time,
     source::RadiationSource,
-    media::PropagationMedia_Simple,
+    media::SimpleMedia,
     rule::MeshIntegrals.IntegrationRule = MeshIntegrals.HAdaptiveCubature()
 )
     integrand(r̄′) = _integrand_H(r̄′, r̄, t, source, media)
@@ -131,7 +143,13 @@ r̄′`. Parameterize the integrand function according to a particular `field so
 # Returns
 - `SVector{3, Quantity}`: the predicted vector-valued integrand value
 """
-function _integrand_E(r̄′::Meshes.Point, r̄::Meshes.Point, t::Unitful.Time, source::RadiationSource, media::SimpleMedia)
+function _integrand_E(
+    r̄′::Meshes.Point,
+    r̄::Meshes.Point,
+    t::Unitful.Time,
+    source::RadiationSource,
+    media::SimpleMedia
+)
     Δr̄ = r̄ - r̄′
     r = LinearAlgebra.norm(Δr̄)
     t′ = t′(r̄, t, r̄′, media)
@@ -171,7 +189,13 @@ r̄′`. Parameterize the integrand function according to a particular `field so
 # Returns
 - `SVector{3, Quantity}`: the predicted vector-valued integrand value
 """
-function _integrand_H(r̄′::Meshes.Point, r̄::Meshes.Point, t::Unitful.Time, source::RadiationSource, media::SimpleMedia)
+function _integrand_H(
+    r̄′::Meshes.Point,
+    r̄::Meshes.Point,
+    t::Unitful.Time,
+    source::RadiationSource,
+    media::SimpleMedia
+)
     Δr̄ = r̄ - r̄′
     r = LinearAlgebra.norm(Δr̄)
     t′ = t′(r̄, t, r̄′, media)
