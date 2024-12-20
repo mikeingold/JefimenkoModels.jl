@@ -1,11 +1,12 @@
+using JefimenkoModels
+using Meshes
+using Plots
+using Unitful
+using Unitful.DefaultSymbols: V, A, m, ns, s
+
 ################################################################################
 #                             BUILD THE MODEL
 ################################################################################
-
-using JefimenkoModels
-using Meshes
-using Unitful
-using Unitful.DefaultSymbols: V, A, m, ns, s
 
 model_disk = let
     # Surface disk with radius 0.5m
@@ -15,14 +16,14 @@ model_disk = let
     xy_plane = Plane(origin, ẑ)
     disk = Disk(origin, ρ₀)
 
-    # Electric current only: spatially-uniform, x-directed, driven by a transient pulse
+    # Electric current only: spatially-uniform, x-directed, transient pulse
     (t₀, f₀, β₀) = (5.0ns, 500e6/s, 1.25)
     signal(t) = sin(2π * f₀ * t) * exp(-β₀ * (f₀ * t)^2)
     Je(r̄, t) = signal(t - t₀) .* x̂ .* A
     source = RadiationSource(disk, J_e = Je)
 
     metadata = Dict(
-        :description => "Uniform current over a 0.5m disk, stimulated by transient pulse signal."
+        :description => "Uniform current over a 0.5m disk, stimulated by transient pulse."
     )
     
     JefimenkoModel(CLASSICAL_VACUUM, source, metadata)
@@ -43,8 +44,6 @@ hfield = map(t -> H(r, t, model_disk), t)
 ################################################################################
 #                             PLOT THE DATA
 ################################################################################
-
-using Plots
 
 # Accessor functions
 e(i) = map(e -> getindex(e,i), efield)
