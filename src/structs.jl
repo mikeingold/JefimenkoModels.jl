@@ -90,9 +90,9 @@ end
 
 # Allow construction with single source
 function JefimenkoModel(
-    media::AbstractPropagationMedia,
-    source::RadiationSource,
+    media::M,
+    source::S,
     metadata::Dict{Symbol, Any} = Dict{Symbol, Any}()
-)
-    return JefimenkoModel(media, [source], metadata)
+) where {M <: AbstractPropagationMedia, S <: RadiationSource}
+    return JefimenkoModel{M, S}(media, [source], metadata)
 end
