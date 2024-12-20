@@ -3,21 +3,29 @@
 ################################################################################
 
 using JefimenkoModels
-using Unitful, UnitfulCoordinateSystems
+using Meshes
+using Unitful
 using Unitful.DefaultSymbols: V, A, m, ns, s
 
 model_disk = let
-    # Surface disk source with radius 0.5m
-    # Electric current only: spatially-uniform, x-directed, driven by a transient pulse
+    # Surface disk with radius 0.5m
     ρ₀ = 0.5m
-    (t₀_s, f₀_Hz, β₀) = (5.0e-9, 500e6, 1.25)
-    sig(t_s::Real) = sin(2π*f₀_Hz*t_s) * exp(-β₀*(f₀_Hz*t_s)^2)
-    Je(r̄::AbstractCoordinate, t_s::Real) = x̂ .* sig(t_s-t₀_s)             # t in s -> Jₑ in A
-    source = SurfaceSource_Disk{Float64}(ρ₀, NULL_CHARGE, NULL_CHARGE, Je, NULL_CURRENT)
+    origin = Point(0, 0, 0)
+    ẑ = Vec(0, 0, 1)
+    xy_plane = Plane(origin, ẑ)
+    disk = Disk(origin, ρ₀)
 
-    metadata = Dict(:description=>"Uniform current over a 0.5m disk, stimulated by transient pulse signal.")
+    # Electric current only: spatially-uniform, x-directed, driven by a transient pulse
+    (t₀, f₀, β₀) = (5.0ns, 500e6/s, 1.25)
+    signal(t) = sin(2π * f₀ * t) * exp(-β₀ * (f₀ * t)^2)
+    Je(r̄, t) = signal(t - t₀) .* x̂ .* A
+    source = RadiationSource(disk, J_e = Je)
+
+    metadata = Dict(
+        :description => "Uniform current over a 0.5m disk, stimulated by transient pulse signal."
+    )
     
-    JefimenkoModel{Float64}(CLASSICAL_VACUUM, [source], metadata)
+    JefimenkoModel(CLASSICAL_VACUUM, source, metadata)
 end
 
 ################################################################################
@@ -25,12 +33,12 @@ end
 ################################################################################
 
 # Observation location and time domain of interest
-r = CoordinateCartesian(0.0m, 0.0m, 1.5m)
+r = point(0.0m, 0.0m, 1.5m)
 t = range(0.0ns, 20.0ns, length=800)
 
 # Calculate the fields at r over the time domain
-efield = map(t -> E(r,t,model_disk), t)
-hfield = map(t -> H(r,t,model_disk), t)
+efield = map(t -> E(r, t, model_disk), t)
+hfield = map(t -> H(r, t, model_disk), t)
 
 ################################################################################
 #                             PLOT THE DATA
@@ -54,9 +62,9 @@ common_formatting = Dict(
     :minorgridstyle => :dot,
 )
 
-jx(t::Unitful.Time) = model_disk.sources[1].Jₑ(r, ustrip(s,t))[1]
-jy(t::Unitful.Time) = model_disk.sources[1].Jₑ(r, ustrip(s,t))[2]
-jz(t::Unitful.Time) = model_disk.sources[1].Jₑ(r, ustrip(s,t))[3]
+jx(t) = model_disk.sources[1].Jₑ(r, t)[1]
+jy(t) = model_disk.sources[1].Jₑ(r, t)[2]
+jz(t) = model_disk.sources[1].Jₑ(r, t)[3]
 
 # Plot the source current density
 p1 = plot(t, [jx.(t), jy.(t), jz.(t)], label=["Jx" "Jy" "Jz"], linewidth=3,
