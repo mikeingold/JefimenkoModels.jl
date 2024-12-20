@@ -42,6 +42,17 @@ struct RadiationSource{G <: Meshes.Geometry, F1 <: Function, F2 <: Function, F3 
     J_h::F4
 end
 
+# Allow keyword construction where unspecified==NULL
+function RadiationSource(
+    geometry::Meshes.Geometry;
+    rho_e = NULL_CHARGE,
+    rho_h = NULL_CHARGE,
+    J_e = NULL_CURRENT,
+    J_h = NULL_CURRENT
+)
+    return RadiationSource(geometry, rho_e, rho_h, J_e, J_h)
+end
+
 function Base.getproperty(source::RadiationSource, sym::Symbol)
     if sym in (:geometry, :rho_e, :rho_h, :J_e, :J_h)  # included
         return getfield(source, sym)
@@ -65,5 +76,23 @@ end
 struct JefimenkoModel{M <: AbstractPropagationMedia, S <: RadiationSource}
     media::M
     sources::Vector{S}
-    metadata::Dict{Symbol,Any}
+    metadata::Dict{Symbol, Any}
+
+    # Metadata is optional
+    function JefimenkoModel(
+        media::M,
+        sources::Vector{S},
+        metadata::Dict{Symbol, Any} = Dict{Symbol, Any}()
+    ) where {M <: AbstractPropagationMedia, S <: RadiationSource}
+        return new(media, sources, metadata)
+    end
+end
+
+# Allow construction with single source
+function JefimenkoModel(
+    media::AbstractPropagationMedia,
+    source::RadiationSource,
+    metadata::Dict{Symbol, Any} = Dict{Symbol, Any}()
+)
+    return JefimenkoModel(media, [source], metadata)
 end
