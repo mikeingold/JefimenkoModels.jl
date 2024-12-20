@@ -1,18 +1,30 @@
-using Unitful, UnitfulCoordinateSystems
-using Unitful.DefaultSymbols: m, ns
-using JefimenkoModels, Test
+using TestItemRunner
+using TestItems
 
-@testset "Accessors for LineSource_Straight" begin
-    a = CoordinateCartesian(-0.5m, 0.0m, 0.0m)
-    b = CoordinateCartesian( 0.5m, 0.0m, 0.0m)
-    rho(r̄::AbstractCoordinate, t_s::Real) = cos(2π*100e6*t_s)^2
-    J(r̄::AbstractCoordinate, t_s::Real) = x̂ .* cos(2π*100e6*t_s)
-    source = LineSource_Straight{Float64}(a, b, rho, rho, J, J)
+@run_package_tests verbose=true
 
-	@test source.a.x ≈ source.ā.x ≈ -0.5m
-    @test source.b.x ≈ source.b̄.x ≈  0.5m
-    @test source.rho_e === source.ρₑ === source.ρe
-    @test source.rho_h === source.ρₕ === source.ρh
-    @test source.J_e === source.Je === source.Jₑ
-    @test source.J_h === source.Jh === source.Jₕ
+@testsnippet Setup begin
+    using JefimenkoModels
+    using Meshes
+    using Unitful
+    using Unitful.DefaultSymbols: m, s
+end
+
+@testitem "Construct a Model" setup=[Setup] begin
+    # Geometry
+    a = Point(-0.5m, 0.0m, 0.0m)
+    b = Point( 0.5m, 0.0m, 0.0m)
+    segment = Segment(a, b)
+
+    # Signals
+    f = 100e6 / s
+    ρe(r̄, t) = cos(2π * f * t)
+    Je(r̄, t) = cos(2π * f * t) .* x̂ .* u"A"
+    source = RadiationSource(segment, rho_e = ρe, J_e = Je)
+
+    @test source.geometry === segment
+    @test source.rho_e === ρe
+    @test source.rho_h === NULL_CHARGE
+    @test source.J_e === Je
+    @test source.J_h === NULL_CURRENT
 end
