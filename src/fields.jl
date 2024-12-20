@@ -69,6 +69,7 @@ end
 ###########################################################################
 #                              WORKERS
 ###########################################################################
+
 """
     _E(r̄, t, source, media, rule = HAdaptiveCubature())
 
@@ -83,7 +84,6 @@ Calculate the integral using a specified `integration rule`.
 - `media::PropagationMedia`: properties of the propagation media
 - `rule::MeshIntegrals.IntegrationRule`: rule to use for numerical integration
 """
-
 function _E(
     r̄::Meshes.Point,
     t::Unitful.Time,
