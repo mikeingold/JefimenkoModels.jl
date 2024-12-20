@@ -22,9 +22,18 @@ end
     Je(r̄, t) = cos(2π * f * t) .* x̂ .* u"A"
     source = RadiationSource(segment, rho_e = ρe, J_e = Je)
 
+    # Inspect RadiationSource fields
     @test source.geometry === segment
     @test source.rho_e === ρe
     @test source.rho_h === NULL_CHARGE
     @test source.J_e === Je
     @test source.J_h === NULL_CURRENT
+
+    # Build a model
+    model = JefimenkoModel(CLASSICAL_VACUUM, source)
+
+    # Inspect the model
+    @test model.media === CLASSICAL_VACUUM
+    @test only(model.sources) === source
+    @test isempty(model.metadata)
 end
