@@ -17,5 +17,4 @@ JefimenkoModels._E
 JefimenkoModels._integrand_E
 JefimenkoModels._H
 JefimenkoModels._integrand_H
-JefimenkoModels._P
 ```
