@@ -9,9 +9,6 @@ CLASSICAL_VACUUM = let
     SimpleMedia(ε₀, μ₀, c₀)
 end
 
-NULL_CHARGE(r̄::Meshes.Point, t::Real) = 0
-NULL_CURRENT(r̄::Meshes.Point, t::Real) = StaticArrays.SVector(0, 0, 0)
-
 ###########################################################################
 #                     RETARDED-TIME CALCULATIONS
 ###########################################################################
@@ -42,7 +39,7 @@ point (`r̄`,`t`) through a `propagation medium`.
 - `r̄::Meshes.Point`: spatial location of the observation point
 - `t::Unitful.Time`: time at the observation point
 - `r̄′::Meshes.Point`: spatial location of the source point
-- `media::AbstractPropagationMedia`: properties of the medium between r̄′ and r̄
+- `media::SimpleMedia`: properties of the medium between r̄′ and r̄
 """
 function t′(r̄::Meshes.Point, t::Unitful.Time, r̄′::Meshes.Point, media::SimpleMedia)
     return t′(r̄, t, r̄′, media.c)
