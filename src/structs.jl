@@ -45,11 +45,29 @@ end
 # Allow keyword construction where unspecified==NULL
 function RadiationSource(
     geometry::Meshes.Geometry;
-    rho_e = NULL_CHARGE,
-    rho_h = NULL_CHARGE,
-    J_e = NULL_CURRENT,
-    J_h = NULL_CURRENT
+    rho_e = missing,
+    rho_h = missing,
+    J_e = missing,
+    J_h = missing
 )
+    N = Meshes.paramdim(geometry)
+
+    if ismissing(rho_e)
+        rho_e = (r̄, t) -> 0.0 * u"C" / u"m"^N
+    end
+
+    if ismissing(rho_h)
+        rho_h = (r̄, t) -> 0.0 * u"Wb" / u"m"^N
+    end
+
+    if ismissing(J_e)
+        J_e = (r̄, t) -> 0.0 * u"A" / u"m"^(N-1)
+    end
+
+    if ismissing(J_h)
+        J_h = (r̄, t) -> 0.0 * u"V" / u"m"^(N-1)
+    end
+
     return RadiationSource(geometry, rho_e, rho_h, J_e, J_h)
 end
 

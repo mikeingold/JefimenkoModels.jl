@@ -14,7 +14,7 @@ module JefimenkoModels
     export RadiationSource, JefimenkoModel
 
     include("utils.jl")
-    export CLASSICAL_VACUUM, NULL_CHARGE, NULL_CURRENT, t′
+    export CLASSICAL_VACUUM, t′
 
     include("fields.jl")
     export E, H, P
