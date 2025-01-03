@@ -201,7 +201,7 @@ function _integrand_E(
     c = media.c
 
     # Source functions
-    ρₑ = source.ρₑ(r̄′, t′)
+    ρₑ = source.rho_e(r̄′, t′)
     ∂ρₑ_∂t = ForwardDiff.derivative(t -> source.rho_e(r̄′, t), t′)
     ∂Jₑ_∂t = ForwardDiff.derivative(t -> source.J_e(r̄′, t), t′)
     Jₕ = source.J_h(r̄′, t′)
@@ -242,16 +242,16 @@ function _integrand_H(
 )
     Δr̄ = r̄ - r̄′
     r = LinearAlgebra.norm(Δr̄)
-    t′ = t′(r̄, t, r̄′, media)
+    t′ = _t′(r̄, t, r̄′, media)
     μ = media.permeability
     c = media.c
 
     # Source functions
-    ρₕ = source.ρₕ(r̄′, t′)
-    ∂ρₕ_∂t = ForwardDiff.derivative(t -> source.ρₕ(r̄′, t), t′)
-    Jₑ = source.Jₑ(r̄′, t′)
-    ∂Jₑ_∂t = ForwardDiff.derivative(t -> source.Jₑ(r̄′, t), t′)
-    ∂Jₕ_∂t = ForwardDiff.derivative(t -> source.Jₕ(r̄′, t), t′)
+    ρₕ = source.rho_h(r̄′, t′)
+    ∂ρₕ_∂t = ForwardDiff.derivative(t -> source.rho_h(r̄′, t), t′)
+    Jₑ = source.J_e(r̄′, t′)
+    ∂Jₑ_∂t = ForwardDiff.derivative(t -> source.J_e(r̄′, t), t′)
+    ∂Jₕ_∂t = ForwardDiff.derivative(t -> source.J_h(r̄′, t), t′)
 
     # Calculate integrand terms
     term1 = (μ^-1) .* ( ((Δr̄_m ./ r_m^3) .* ρₕ) + ((Δr̄_m ./ r_m^2) .* (c^-1) .* ∂ρₕ_∂t) - ((1 / r_m) .* (c^-2) .* ∂Jₕ_∂t) )
