@@ -7,7 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Changed field names for `SimpleMedia` to `permittivity` and `permeability`, and added
+a new two-argument constructor that derives `c`.
+
 ### Removed
 
 - Removed `NULL_CHARGE` and `NULL_CURRENT` since new keyword-argument constructor for
 `RadiationSource` allows null sources to be left unspecified.
+- Converted exported `t′` function to non-exported internal `_t′` utility function.
+- Removed specialty Unicode accessors for structs defined in this package.
