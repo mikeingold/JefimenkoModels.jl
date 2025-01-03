@@ -61,7 +61,8 @@ a specified `relative tolerance`.
 function E(
     r̄::Meshes.Point,
     t::Unitful.Time,
-    model::JefimenkoModel
+    model::JefimenkoModel,
+    rule::MeshIntegrals.IntegrationRule = MeshIntegrals.HAdaptiveCubature()
 )
     # Superimpose the contributions of the E(r̄,t) produced by each source in model
     return mapreduce(source -> _E(r̄, t, source, model.media, rule), +, model.sources)
@@ -82,7 +83,8 @@ a specified `relative tolerance`.
 function H(
     r̄::Meshes.Point,
     t::Unitful.Time,
-    model::JefimenkoModel
+    model::JefimenkoModel,
+    rule::MeshIntegrals.IntegrationRule = MeshIntegrals.HAdaptiveCubature()
 )
     # Superimpose the contributions of the 𝐇(r̄,t) produced by each source in model
     return mapreduce(source -> _H(r̄, t, source, model.media, rule), +, model.sources) 
@@ -103,10 +105,11 @@ integrals using a specified `relative tolerance`.
 function P(
     r̄::Meshes.Point,
     t::Unitful.Time,
-    model::JefimenkoModel
+    model::JefimenkoModel,
+    rule::MeshIntegrals.IntegrationRule = MeshIntegrals.HAdaptiveCubature()
 )
-    Ert = E(r̄, t, model)
-    Hrt = H(r̄, t, model)
+    Ert = E(r̄, t, model, rule)
+    Hrt = H(r̄, t, model, rule)
     return cross(Ert, Hrt) .|> W/m^2
 end
 
