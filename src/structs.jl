@@ -5,9 +5,23 @@
 abstract type AbstractPropagationMedia end
 
 struct SimpleMedia{E <: Quantity, U <: Quantity, C <: Quantity} <: AbstractPropagationMedia
-    epsilon::E
-    mu::U
+    permittivity::E
+    permeability::U
     c::C
+end
+
+function SimpleMedia(permittivity::E, permeability::U) where {E <: Quantity, U <: Quantity}
+    ε = Unitful.uconvert((A * s) / (V * m), permittivity)
+    μ = Unitful.uconvert((V * s) / (A * m), permeability)
+    c = Unitful.uconvert(m / s, sqrt(1 / (ε * μ)))
+    return SimpleMedia(ε, μ, c)
+end
+
+CLASSICAL_VACUUM = let
+    ε₀ = Unitful.uconvert((A * s) / (V * m), float(PhysicalConstants.CODATA2018.ε_0))
+    μ₀ = Unitful.uconvert((V * s) / (A * m), float(PhysicalConstants.CODATA2018.μ_0))
+    c₀ = Unitful.uconvert(m / s, float(PhysicalConstants.CODATA2018.c_0))
+    SimpleMedia(ε₀, μ₀, c₀)
 end
 
 #=
@@ -17,18 +31,6 @@ struct PropagationMedia_DiagonallyAnisotropic{E <: Quantity, U <: Quantity, C <:
     c::Diagonal{C}
 end
 =#
-
-function Base.getproperty(media::AbstractPropagationMedia, sym::Symbol)
-    if sym in (:epsilon, :mu, :c)  # included
-        return getfield(media, sym)
-    elseif sym in (:ε, :ϵ)  # aliases
-        return getfield(media, :epsilon)
-    elseif sym in (:μ)  # aliases
-        return getfield(media, :mu)
-    else  # fallback
-        return getfield(media, sym)
-    end
-end
 
 ################################################################################
 #                        RADIATION SOURCES
@@ -50,41 +52,24 @@ function RadiationSource(
     J_e = missing,
     J_h = missing
 )
+    # Number of parametric dimensions in geometry is used to determine proper density units
     N = Meshes.paramdim(geometry)
 
+    # Replace missing sources with null functions
     if ismissing(rho_e)
-        rho_e = (r̄, t) -> 0.0 * u"C" / u"m"^N
+        rho_e = (r̄, t) -> 0.0 * (u"C" / u"m"^N)
     end
-
     if ismissing(rho_h)
-        rho_h = (r̄, t) -> 0.0 * u"Wb" / u"m"^N
+        rho_h = (r̄, t) -> 0.0 * (u"Wb" / u"m"^N)
     end
-
     if ismissing(J_e)
-        J_e = (r̄, t) -> 0.0 * u"A" / u"m"^(N-1)
+        J_e = (r̄, t) -> 0.0 * (u"A" / u"m"^(N-1))
     end
-
     if ismissing(J_h)
-        J_h = (r̄, t) -> 0.0 * u"V" / u"m"^(N-1)
+        J_h = (r̄, t) -> 0.0 * (u"V" / u"m"^(N-1))
     end
 
     return RadiationSource(geometry, rho_e, rho_h, J_e, J_h)
-end
-
-function Base.getproperty(source::RadiationSource, sym::Symbol)
-    if sym in (:geometry, :rho_e, :rho_h, :J_e, :J_h)  # included
-        return getfield(source, sym)
-    elseif sym in (:ρₑ, :ρe)  # aliases
-        return getfield(source, :rho_e)
-    elseif sym in (:ρₕ, :ρh)  # aliases
-        return getfield(source, :rho_h)
-    elseif sym in (:Jₑ, :Je)  # aliases
-        return getfield(source, :J_e)
-    elseif sym in (:Jₕ, :Jh)  # aliases
-        return getfield(source, :J_h)
-    else  # fallback
-        return getfield(source, sym)
-    end
 end
 
 ################################################################################

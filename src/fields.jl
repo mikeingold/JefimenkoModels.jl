@@ -1,4 +1,48 @@
 ###########################################################################
+#                     RETARDED-TIME CALCULATIONS
+###########################################################################
+
+"""
+    _t′(r̄, t, r̄′, c)
+
+Calculate the retarded-time at a source point `r̄′` for an observer at the space-time
+point (`r̄`,`t`) through a medium with speed of light `c`.
+
+# Arguments
+- `r̄::Meshes.Point`: spatial location of the observation point
+- `t::Unitful.Time`: time at the observation point
+- `r̄′::Meshes.Point`: spatial location of the source point
+- `c::Quantity`: Unitful speed of light in the medium between r̄′ and r̄
+"""
+function _t′(r̄::Meshes.Point, t::Unitful.Time, r̄′::Meshes.Point, c::Quantity)
+    return (t - (LinearAlgebra.norm(r̄ - r̄′) / c))
+end
+
+"""
+    _t′(r̄, t, r̄′, media)
+
+Calculate the retarded-time at a source point `r̄′` for an observer at the space-time
+point (`r̄`,`t`) through a `propagation medium`.
+
+# Arguments
+- `r̄::Meshes.Point`: spatial location of the observation point
+- `t::Unitful.Time`: time at the observation point
+- `r̄′::Meshes.Point`: spatial location of the source point
+- `media::SimpleMedia`: properties of the medium between r̄′ and r̄
+"""
+function _t′(r̄::Meshes.Point, t::Unitful.Time, r̄′::Meshes.Point, media::SimpleMedia)
+    return t′(r̄, t, r̄′, media.c)
+end
+
+#=
+function _t′(r̄::Meshes.Point, t::Unitful.Time, r̄′::Meshes.Point, media::PropagationMedia_DiagonallyAnisotropic)
+    Δr̄ = r̄ - r̄′
+    Δt = norm(media.c^-1 * Δr̄) |> unit(t)
+    return (t - Δt)
+end
+=#
+
+###########################################################################
 #                     EM FIELD CALCULATIONS
 ###########################################################################
 
@@ -153,15 +197,15 @@ function _integrand_E(
     Δr̄ = r̄ - r̄′
     r = LinearAlgebra.norm(Δr̄)
     t′ = t′(r̄, t, r̄′, media)
-    ε = media.ε
+    ε = media.permittivity
     c = media.c
 
     # Source functions
     ρₑ = source.ρₑ(r̄′, t′)
-    ∂ρₑ_∂t = ForwardDiff.derivative(t -> source.ρₑ(r̄′, t), t′)
-    ∂Jₑ_∂t = ForwardDiff.derivative(t -> source.Jₑ(r̄′, t), t′)
-    Jₕ = source.Jₕ(r̄′, t′)
-    ∂Jₕ_∂t = ForwardDiff.derivative(t -> source.Jₕ(r̄′, t), t′)
+    ∂ρₑ_∂t = ForwardDiff.derivative(t -> source.rho_e(r̄′, t), t′)
+    ∂Jₑ_∂t = ForwardDiff.derivative(t -> source.J_e(r̄′, t), t′)
+    Jₕ = source.J_h(r̄′, t′)
+    ∂Jₕ_∂t = ForwardDiff.derivative(t -> source.J_h(r̄′, t), t′)
 
     # Calculate integrand terms
     term1 = (ε^-1) .* ( ((Δr̄ ./ r^3) .* ρₑ) + ((Δr̄ ./ r^2) .* (c^-1) .* ∂ρₑ_∂t) - ((1 / r) .* (c^-2) .* ∂Jₑ_∂t) )
@@ -199,7 +243,7 @@ function _integrand_H(
     Δr̄ = r̄ - r̄′
     r = LinearAlgebra.norm(Δr̄)
     t′ = t′(r̄, t, r̄′, media)
-    μ = media.μ
+    μ = media.permeability
     c = media.c
 
     # Source functions
