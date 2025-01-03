@@ -14,12 +14,12 @@ model_disk = let
     origin = Point(0, 0, 0)
     ẑ = Vec(0, 0, 1)
     xy_plane = Plane(origin, ẑ)
-    disk = Disk(origin, ρ₀)
+    disk = Disk(xy_plane, ρ₀)
 
     # Electric current only: spatially-uniform, x-directed, transient pulse
     (t₀, f₀, β₀) = (5.0ns, 500e6/s, 1.25)
     signal(t) = sin(2π * f₀ * t) * exp(-β₀ * (f₀ * t)^2)
-    Je(r̄, t) = signal(t - t₀) .* x̂ .* A
+    Je(r̄, t) = signal(t - t₀) .* x̂ .* (A/m)
     source = RadiationSource(disk, J_e = Je)
 
     metadata = Dict(
@@ -34,7 +34,7 @@ end
 ################################################################################
 
 # Observation location and time domain of interest
-r = point(0.0m, 0.0m, 1.5m)
+r = Point(0.0m, 0.0m, 1.5m)
 t = range(0.0ns, 20.0ns, length=800)
 
 # Calculate the fields at r over the time domain
