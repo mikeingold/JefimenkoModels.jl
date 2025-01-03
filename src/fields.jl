@@ -199,7 +199,7 @@ function _integrand_E(
 )
     Δr̄ = r̄ - r̄′
     r = LinearAlgebra.norm(Δr̄)
-    t′ = t′(r̄, t, r̄′, media)
+    t′ = _t′(r̄, t, r̄′, media)
     ε = media.permittivity
     c = media.c
 
