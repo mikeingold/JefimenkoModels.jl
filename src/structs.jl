@@ -85,7 +85,7 @@ struct JefimenkoModel{M <: AbstractPropagationMedia, S <: RadiationSource}
     function JefimenkoModel{M, S}(
         media::M,
         sources::Vector{S},
-        metadata::Dict{Symbol, Any} = Dict{Symbol, Any}()
+        metadata = Dict{Symbol, Any}()
     ) where {M <: AbstractPropagationMedia, S <: RadiationSource}
         return new(media, sources, metadata)
     end
