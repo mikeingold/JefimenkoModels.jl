@@ -80,22 +80,30 @@ struct JefimenkoModel{M <: AbstractPropagationMedia, S <: RadiationSource}
     media::M
     sources::Vector{S}
     metadata::Dict{Symbol, Any}
+end
 
-    # Metadata is optional
-    function JefimenkoModel{M, S}(
-        media::M,
-        sources::Vector{S},
-        metadata = Dict{Symbol, Any}()
-    ) where {M <: AbstractPropagationMedia, S <: RadiationSource}
-        return new(media, sources, metadata)
-    end
+# Metadata is optional
+function JefimenkoModel(
+    media::M,
+    sources::Vector{S}
+) where {M <: AbstractPropagationMedia, S <: RadiationSource}
+    return JefimenkoModel(media, sources, Dict{Symbol, Any}())
+end
+
+# Promote arbitrary Dict{K, V} -> Dict{Symbol, Any}
+function JefimenkoModel(
+    media::M,
+    sources::Vector{S},
+    metadata::Dict
+) where {M <: AbstractPropagationMedia, S <: RadiationSource}
+    return JefimenkoModel(media, sources, Dict{Symbol, Any}(metadata))
 end
 
 # Allow construction with single source
 function JefimenkoModel(
     media::M,
     source::S,
-    metadata::Dict{Symbol, Any} = Dict{Symbol, Any}()
+    metadata = Dict{Symbol, Any}()
 ) where {M <: AbstractPropagationMedia, S <: RadiationSource}
-    return JefimenkoModel{M, S}(media, [source], metadata)
+    return JefimenkoModel{M, S}(media, S[source], metadata)
 end
