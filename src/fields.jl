@@ -31,7 +31,7 @@ point (`r̄`,`t`) through a `propagation medium`.
 - `media::SimpleMedia`: properties of the medium between r̄′ and r̄
 """
 function _t′(r̄::Meshes.Point, t::Unitful.Time, r̄′::Meshes.Point, media::SimpleMedia)
-    return t′(r̄, t, r̄′, media.c)
+    return _t′(r̄, t, r̄′, media.c)
 end
 
 #=
