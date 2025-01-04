@@ -1,9 +1,11 @@
 module JefimenkoModels
-    import ForwardDiff
     import LinearAlgebra
     import Meshes
     import MeshIntegrals
     import PhysicalConstants
+    
+    import UnitfulChainRules
+    import Zygote
 
     using StaticArrays
     using Unitful

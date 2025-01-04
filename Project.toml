@@ -4,19 +4,21 @@ authors = ["Michael Ingold <mike.ingold@gmail.com>"]
 version = "0.6.0"
 
 [deps]
-ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Meshes = "eacbb407-ea5a-433e-ab97-5258b1ca43fa"
 MeshIntegrals = "dadec2fd-bbe0-4da4-9dbe-476c782c8e47"
 PhysicalConstants = "5ad8b20f-a522-5ce9-bfc9-ddf1d5bda6ab"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
+UnitfulChainRules = "f31437dd-25a7-4345-875f-756556e6935d"
+Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
 
 [compat]
 julia = "1.6"
-ForwardDiff = "0.10"
 Meshes = "0.52"
 MeshIntegrals = "0.16"
 PhysicalConstants = "0.2"
 StaticArrays = "1"
 Unitful = "1"
+UnitfulChainRules = "0.1"
+Zygote = "0.6"
