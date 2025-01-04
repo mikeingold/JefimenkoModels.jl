@@ -206,9 +206,9 @@ function _integrand_E(
     # Source functions
     ρₑ = source.rho_e(r̄′, t′)
     ∂ρₑ_∂t = only(Zygote.gradient(t -> source.rho_e(r̄′, t), t′))
-    ∂Jₑ_∂t = only(Zygote.gradient(t -> source.J_e(r̄′, t), t′))
+    ∂Jₑ_∂t = only(Zygote.jacobian(t -> source.J_e(r̄′, t), t′))
     Jₕ = source.J_h(r̄′, t′)
-    ∂Jₕ_∂t = only(Zygote.gradient(t -> source.J_h(r̄′, t), t′))
+    ∂Jₕ_∂t = only(Zygote.jacobian(t -> source.J_h(r̄′, t), t′))
 
     # Calculate integrand terms
     term1 = (ε^-1) .* ( ((Δr̄ ./ r^3) .* ρₑ) + ((Δr̄ ./ r^2) .* (c^-1) .* ∂ρₑ_∂t) - ((1 / r) .* (c^-2) .* ∂Jₑ_∂t) )
