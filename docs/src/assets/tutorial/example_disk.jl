@@ -17,6 +17,7 @@ model_disk = let
     disk = Disk(xy_plane, ρ₀)
 
     # Electric current only: spatially-uniform, x-directed, transient pulse
+    x̂ = [1, 0, 0]
     (t₀, f₀, β₀) = (5.0ns, 500e6/s, 1.25)
     signal(t) = sin(2π * f₀ * t) * exp(-β₀ * (f₀ * t)^2)
     Je(r̄, t) = signal(t - t₀) .* x̂ .* (A/m)
