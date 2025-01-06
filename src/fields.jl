@@ -204,15 +204,15 @@ function _integrand_E(
     c = media.c
 
     # Source functions
-    ρₑ = source.rho_e(r̄′, t′)
-    ∂ρₑ_∂t = only(Zygote.gradient(t -> source.rho_e(r̄′, t), t′))
-    ∂Jₑ_∂t = only(Zygote.jacobian(t -> source.J_e(r̄′, t), t′))
-    Jₕ = source.J_h(r̄′, t′)
-    ∂Jₕ_∂t = only(Zygote.jacobian(t -> source.J_h(r̄′, t), t′))
+    ρe = source.rho_e(r̄′, t′)
+    ∂ρe_∂t = only(Zygote.gradient(t -> source.rho_e(r̄′, t), t′))
+    ∂Je_∂t = only(Zygote.jacobian(t -> source.J_e(r̄′, t), t′))
+    Jh = source.J_h(r̄′, t′)
+    ∂Jh_∂t = only(Zygote.jacobian(t -> source.J_h(r̄′, t), t′))
 
     # Calculate integrand terms
-    term1 = (ε^-1) .* ( ((Δr̄ ./ r^3) .* ρₑ) + ((Δr̄ ./ r^2) .* (c^-1) .* ∂ρₑ_∂t) - ((1 / r) .* (c^-2) .* ∂Jₑ_∂t) )
-    term2 = LinearAlgebra.cross(((Jₕ ./ r^3) + ((1 / r^2) .* (c^-1) .* ∂Jₕ_∂t)), Δr̄)
+    term1 = (ε^-1) .* ( ((Δr̄ ./ r^3) .* ρe) + ((Δr̄ ./ r^2) .* (c^-1) .* ∂ρe_∂t) - ((1 / r) .* (c^-2) .* ∂Je_∂t) )
+    term2 = LinearAlgebra.cross(((Jh ./ r^3) + ((1 / r^2) .* (c^-1) .* ∂Jh_∂t)), Δr̄)
 
     return (term1 - term2)
 end
@@ -250,15 +250,15 @@ function _integrand_H(
     c = media.c
 
     # Source functions
-    ρₕ = source.rho_h(r̄′, t′)
-    ∂ρₕ_∂t = only(Zygote.gradient(t -> source.rho_h(r̄′, t), t′))
-    Jₑ = source.J_e(r̄′, t′)
-    ∂Jₑ_∂t = only(Zygote.gradient(t -> source.J_e(r̄′, t), t′))
-    ∂Jₕ_∂t = only(Zygote.gradient(t -> source.J_h(r̄′, t), t′))
+    ρh = source.rho_h(r̄′, t′)
+    ∂ρh_∂t = only(Zygote.gradient(t -> source.rho_h(r̄′, t), t′))
+    Je = source.J_e(r̄′, t′)
+    ∂Je_∂t = only(Zygote.gradient(t -> source.J_e(r̄′, t), t′))
+    ∂Jh_∂t = only(Zygote.gradient(t -> source.J_h(r̄′, t), t′))
 
     # Calculate integrand terms
-    term1 = (μ^-1) .* ( ((Δr̄_m ./ r_m^3) .* ρₕ) + ((Δr̄_m ./ r_m^2) .* (c^-1) .* ∂ρₕ_∂t) - ((1 / r_m) .* (c^-2) .* ∂Jₕ_∂t) )
-    term2 = LinearAlgebra.cross((Jₑ ./ r_m^3) + ((1 / r_m^2) .* (c^-1) .* ∂Jₑ_∂t), Δr̄_m)
+    term1 = (μ^-1) .* ( ((Δr̄_m ./ r_m^3) .* ρh) + ((Δr̄_m ./ r_m^2) .* (c^-1) .* ∂ρh_∂t) - ((1 / r_m) .* (c^-2) .* ∂Jh_∂t) )
+    term2 = LinearAlgebra.cross((Je ./ r_m^3) + ((1 / r_m^2) .* (c^-1) .* ∂Je_∂t), Δr̄_m)
 
     return (term1 + term2)
 end
