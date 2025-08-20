@@ -1,3 +1,6 @@
+# This workflow is adapted from JuliaGeometry/MeshIntegrals.jl.
+# Credit: Joshua Lampert (@joshualampert)
+
 name: Doc Preview Cleanup
 
 on:
