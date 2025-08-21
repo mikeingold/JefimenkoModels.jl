@@ -4,19 +4,34 @@ using TestItems
 @run_package_tests verbose=true
 
 @testsnippet Setup begin
-    using Unitful
-    using Unitful.DefaultSymbols: m, ns
-    using UnitfulCoordinateSystems
     using JefimenkoModels
+    using Meshes
+    using Unitful
+    using Unitful.DefaultSymbols: m, s
 end
 
-@testitem "LineSource_Straight" setup=[Setup] begin
-    a = CoordinateCartesian(-0.5m, 0.0m, 0.0m)
-    b = CoordinateCartesian( 0.5m, 0.0m, 0.0m)
-    rho(r̄::AbstractCoordinate, t_s::Real) = cos(2π * 100e6 * t_s)^2
-    J(r̄::AbstractCoordinate, t_s::Real) = x̂ .* cos(2π * 100e6 * t_s)
-    source = LineSource_Straight{Float64}(a, b, rho, rho, J, J)
+@testitem "Construct a Model" setup=[Setup] begin
+    # Geometry
+    a = Point(-0.5m, 0.0m, 0.0m)
+    b = Point( 0.5m, 0.0m, 0.0m)
+    segment = Segment(a, b)
 
-	@test source.a.x ≈ -0.5m
-    @test source.b.x ≈  0.5m
+    # Signals
+    f = 100e6 / s
+    ρe(r̄, t) = cos(2π * f * t) * u"C/m^2"
+    Je(r̄, t) = cos(2π * f * t) .* x̂ .* u"A/m"
+    source = RadiationSource(segment, rho_e = ρe, J_e = Je)
+
+    # Inspect RadiationSource fields
+    @test source.geometry === segment
+    @test source.rho_e === ρe
+    @test source.J_e === Je
+
+    # Build a model
+    model = JefimenkoModel(CLASSICAL_VACUUM, source)
+
+    # Inspect the model
+    @test model.media === CLASSICAL_VACUUM
+    @test only(model.sources) === source
+    @test isempty(model.metadata)
 end
