@@ -13,4 +13,3 @@ makedocs(
 	)
 
 deploydocs(repo="github.com/mikeingold/JefimenkoModels.jl.git")
-

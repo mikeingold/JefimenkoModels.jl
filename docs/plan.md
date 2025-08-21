@@ -2,17 +2,13 @@
 
 ## Refactoring
 
-First
-- Try it out and see what's broken
-
-Then
-- Implement TestItems.jl, write unit tests
-- Implement CI actions
+- Get refactor running
 - Implement `Base.show` for structs
 - Update documentation
 - Benchmark models between old version and new
 
-## Longer-Term
+## Longer-Term / Vision
 
-- Update `CITATION.bib`
+- Improve documentation for source function definitions (units, types, etc)
 - Create a function to test/inspect/validate models
+- Document structs and constructor methods

@@ -1,7 +1,7 @@
 name = "JefimenkoModels"
 uuid = "d277eb4b-a029-4f3f-8547-f56fb2721095"
 authors = ["Michael Ingold <mike.ingold@gmail.com>"]
-version = "0.6.0"
+version = "0.6.0-DEV"
 
 [deps]
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
@@ -14,7 +14,6 @@ UnitfulChainRules = "f31437dd-25a7-4345-875f-756556e6935d"
 Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
 
 [compat]
-julia = "1.6"
 Meshes = "0.52"
 MeshIntegrals = "0.16"
 PhysicalConstants = "0.2"
@@ -22,3 +21,4 @@ StaticArrays = "1"
 Unitful = "1"
 UnitfulChainRules = "0.1"
 Zygote = "0.6"
+julia = "1.6"
