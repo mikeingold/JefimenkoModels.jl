@@ -1,12 +1,10 @@
-push!(LOAD_PATH, "../src/")
-
-using Documenter, JefimenkoModels
+using Documenter
+using JefimenkoModels
 
 makedocs(
-    sitename="JefimenkoModels.jl",
+    sitename = "JefimenkoModels.jl",
     authors = "Michael Ingold",
-    format = Documenter.HTML(analytics = "G-6SFXR709Z9",
-			     canonical = "https://mikeingold.github.io/JefimenkoModels.jl/stable/"),
+    format = Documenter.HTML(canonical = "https://mikeingold.github.io/JefimenkoModels.jl/stable/"),
     pages = [
             "Home" => "index.md",
             "Tutorial" => "tutorial.md",
@@ -15,4 +13,3 @@ makedocs(
 	)
 
 deploydocs(repo="github.com/mikeingold/JefimenkoModels.jl.git")
-
