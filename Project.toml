@@ -13,7 +13,7 @@ Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 UnitfulCoordinateSystems = "09812cc9-162f-4ef5-b000-81142b1d39ff"
 
 [compat]
-ForwardDiff = "0.10"
+ForwardDiff = "0.10, 1"
 Integrals = "3"
 LinearAlgebra = "1"
 PhysicalConstants = "0.2"
