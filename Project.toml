@@ -14,7 +14,7 @@ UnitfulCoordinateSystems = "09812cc9-162f-4ef5-b000-81142b1d39ff"
 
 [compat]
 ForwardDiff = "0.10"
-Integrals = "3"
+Integrals = "3, 4"
 LinearAlgebra = "1"
 PhysicalConstants = "0.2"
 StaticArrays = "1"
